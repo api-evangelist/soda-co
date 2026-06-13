@@ -1,0 +1,70 @@
+aid: soda-co
+name: Soda
+description: >
+  Soda is an AI-native, fully automated data quality platform that helps data
+  engineering and analytics teams define data quality checks, scan datasets,
+  monitor data freshness, and manage data quality incidents. The Soda Cloud
+  REST API enables programmatic access to trigger scans, retrieve check results,
+  manage incidents, and integrate data quality workflows into CI/CD pipelines
+  and data stacks. Soda supports dozens of data sources including Snowflake,
+  BigQuery, Databricks, PostgreSQL, and DuckDB.
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+url: https://raw.githubusercontent.com/api-evangelist/soda-co/refs/heads/main/apis.yml
+created: 2026-06-13
+modified: 2026-06-13
+specificationVersion: "0.19"
+tags:
+  - Data Quality
+  - Data Observability
+  - Data Contracts
+  - Data Testing
+  - Data Monitoring
+  - Data Engineering
+apis:
+  - aid: soda-co:soda-cloud-rest-api
+    name: Soda Cloud REST API
+    description: >
+      The Soda Cloud REST API enables programmatic access to trigger data quality
+      scans, retrieve check results, update incident status, manage datasets, and
+      integrate data quality workflows into CI/CD pipelines. Supports EU and US
+      cloud regions.
+    image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    humanURL: https://docs.soda.io/reference/rest-api
+    baseURL: https://cloud.soda.io
+    tags:
+      - Data Quality
+      - Incidents
+      - Checks
+      - Datasets
+      - Scans
+    properties:
+      - type: Documentation
+        url: https://docs.soda.io/reference/rest-api
+      - type: OpenAPI
+        url: https://docs.soda.io/reference/rest-api
+common:
+  - type: Website
+    url: https://soda.io
+  - type: Documentation
+    url: https://docs.soda.io
+  - type: GitHubOrg
+    url: https://github.com/sodadata
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/sodadata
+  - type: Blog
+    url: https://soda.io/blog
+  - type: Pricing
+    url: https://soda.io/pricing
+  - type: StatusPage
+    url: https://status.soda.io
+  - type: X
+    url: https://x.com/sodadata
+  - type: Plans
+    url: plans/soda-co-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/soda-co-rate-limits.yml
+  - type: FinOps
+    url: finops/soda-co-finops.yml
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

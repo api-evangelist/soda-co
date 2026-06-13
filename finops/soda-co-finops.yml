@@ -1,0 +1,52 @@
+name: Soda FinOps
+description: Financial operations guidance for managing Soda data quality platform costs.
+url: https://soda.io/pricing
+unit: SPU
+unit_description: >
+  Soda Processing Units (SPUs) represent the compute consumed when Soda runs
+  data quality checks against datasets. SPU consumption scales with the number
+  of datasets monitored, the number and complexity of checks defined, and the
+  frequency at which scans are executed.
+cost_drivers:
+  - name: Dataset count
+    description: Each dataset scanned consumes SPUs per scan execution.
+  - name: Check frequency
+    description: More frequent scans (e.g., hourly vs daily) multiply SPU consumption proportionally.
+  - name: Check complexity
+    description: Metrics-based checks (e.g., anomaly detection, freshness) may consume more SPUs than simple row count checks.
+  - name: AI features
+    description: Advanced AI-powered anomaly detection and root cause analytics features consume additional SPUs.
+optimization:
+  - tip: Start with the Free plan for up to 3 production datasets.
+  - tip: Use scheduled scans rather than continuous scanning to control SPU consumption.
+  - tip: Prioritize critical datasets for more frequent scans; run non-critical datasets less frequently.
+  - tip: Group related checks into a single scan definition to minimize overhead per execution.
+  - tip: Review SPU consumption dashboards regularly and disable unused or redundant checks.
+  - tip: Take advantage of annual billing for Team plan to reduce per-month cost.
+  - tip: Use pay-as-you-go SPU top-ups on the Free plan before committing to Team plan.
+tiers:
+  - plan: Free
+    monthly_cost: 0
+    included_spus: Limited (quantity specified in account dashboard)
+    overage: Pay-as-you-go for additional SPUs
+  - plan: Team
+    monthly_cost: 750
+    billing: Annual
+    included_spus: Based on volume; discounts available
+    overage: Contact Soda for volume pricing
+  - plan: Enterprise
+    monthly_cost: Custom
+    billing: Negotiated
+    included_spus: Custom
+    overage: Custom
+contacts:
+  - type: Sales
+    url: https://soda.io/get-demo
+  - type: Support
+    email: support@soda.io
+notes: >
+  Soda uses a consumption-based model anchored in SPUs. Teams should monitor
+  their SPU usage via the Soda Cloud dashboard and align scan schedules with
+  business SLAs to optimize cost. The Free plan is suitable for individual
+  practitioners; teams with more than 3 production datasets should plan for the
+  Team plan at $750/month (annual billing).

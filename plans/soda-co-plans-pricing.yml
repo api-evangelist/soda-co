@@ -1,0 +1,56 @@
+name: Soda Plans and Pricing
+description: Pricing tiers for the Soda data quality platform, based on Soda Processing Units (SPUs) consumed by data quality checks.
+url: https://soda.io/pricing
+plans:
+  - name: Free
+    price: 0
+    unit: month
+    description: For small projects and individual data practitioners getting started with data quality.
+    features:
+      - Free Soda Processing Units (SPUs) included
+      - Pipeline testing
+      - Metrics observability
+      - Alerting and ticketing integrations
+      - Unlimited users
+      - No credit card required
+    limits:
+      datasets: 3
+      users: unlimited
+    addons:
+      - Pay-as-you-go for additional SPUs
+      - Catalog integrations available as add-ons
+  - name: Team
+    price: 750
+    unit: month
+    billing: annual
+    description: For data engineering teams that need collaborative data quality features and advanced AI capabilities.
+    features:
+      - All Free plan features
+      - Collaborative data contracts
+      - No-code interface
+      - Advanced AI-powered data quality features
+      - Audit logs
+      - Custom roles and RBAC
+      - Private deployment
+      - SSO
+      - Premium support
+    limits:
+      datasets: unlimited
+      users: unlimited
+    notes: SPU consumption scales with volume and frequency of data quality checks. Volume discounts available.
+  - name: Enterprise
+    price: custom
+    unit: month
+    description: For large organizations with custom requirements, advanced compliance needs, and dedicated support.
+    features:
+      - All Team plan features
+      - Custom pricing and contracts
+      - Dedicated account management
+      - Advanced security and compliance
+      - Custom SLAs
+    contact: https://soda.io/get-demo
+notes: >
+  Pricing is based on Soda Processing Units (SPUs), which represent the compute
+  consumed when running data quality checks. SPU consumption scales with the
+  number of datasets, checks, and frequency of scans. Annual billing and volume
+  discounts are available for Team and Enterprise plans.

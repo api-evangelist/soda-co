@@ -1,0 +1,39 @@
+name: Soda API Rate Limits
+description: Rate limiting details for the Soda Cloud REST API.
+url: https://docs.soda.io/reference/rest-api
+limits:
+  - endpoint: /api/v1/incidents/{incidentId}
+    method: POST
+    requests: 10
+    window: 60
+    window_unit: seconds
+    notes: Rate limit applies to incident update operations. Returns HTTP 429 when exceeded.
+  - endpoint: /api/v1/checks
+    method: GET
+    requests: 10
+    window: 60
+    window_unit: seconds
+    notes: General rate limit applies across REST API endpoints.
+  - endpoint: /api/v1/datasets/{datasetId}
+    method: POST
+    requests: 10
+    window: 60
+    window_unit: seconds
+    notes: General rate limit applies to dataset operations.
+headers:
+  - name: Retry-After
+    description: Returned with HTTP 429 responses to indicate when to retry the request.
+error_codes:
+  - code: 429
+    message: Too Many Requests
+    description: The rate limit has been exceeded. Wait and retry after the period indicated in the Retry-After header.
+regions:
+  - name: EU
+    host: cloud.soda.io
+  - name: US
+    host: cloud.us.soda.io
+notes: >
+  The Soda Cloud REST API enforces a rate limit of 10 requests per 60 seconds
+  across all API endpoints. Both EU and US cloud regions apply the same rate
+  limits. Authentication uses HTTP Basic Auth with base64-encoded API key
+  credentials (API_KEY_ID:API_KEY_SECRET).
