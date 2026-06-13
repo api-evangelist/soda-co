@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/soda-co/main/json-schema/soda-cloud-rest-api.json",
+  "title": "Soda Cloud REST API Schemas",
+  "description": "JSON Schema definitions for Soda Cloud REST API request and response objects.",
+  "$defs": {
+    "ErrorResponse": {
+      "type": "object",
+      "title": "Error Response",
+      "properties": {
+        "code": { "type": "string", "description": "Error code" },
+        "message": { "type": "string", "description": "Human-readable error message" }
+      }
+    },
+    "PaginationMetadata": {
+      "type": "object",
+      "title": "Pagination Metadata",
+      "properties": {
+        "first": { "type": "boolean", "description": "Whether this is the first page" },
+        "last": { "type": "boolean", "description": "Whether this is the last page" },
+        "number": { "type": "integer", "description": "Current page number (0-indexed)" },
+        "size": { "type": "integer", "description": "Number of items per page" },
+        "totalElements": { "type": "integer", "description": "Total number of items" },
+        "totalPages": { "type": "integer", "description": "Total number of pages" }
+      }
+    },
+    "CheckContentDTO": {
+      "type": "object",
+      "title": "Check",
+      "description": "A data quality check result",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "datasetId": { "type": "string" },
+        "datasetName": { "type": "string" },
+        "incidentId": { "type": "string" },
+        "evaluationStatus": {
+          "type": "string",
+          "enum": ["pass", "fail", "warn", "error", "unknown"]
+        },
+        "cloudUrl": { "type": "string", "format": "uri" }
+      }
+    },
+    "ScanState": {
+      "type": "string",
+      "title": "Scan State",
+      "enum": [
+        "queuing",
+        "executing",
+        "cancelationRequested",
+        "canceled",
+        "timeOutRequested",
+        "timedOut",
+        "failed",
+        "completedWithErrors",
+        "completedWithFailures",
+        "completedWithWarnings",
+        "completed"
+      ]
+    },
+    "PublicApiScanStatusResponse": {
+      "type": "object",
+      "title": "Scan Status Response",
+      "required": ["id", "state", "created", "cloudUrl"],
+      "properties": {
+        "id": { "type": "string" },
+        "state": { "$ref": "#/$defs/ScanState" },
+        "created": { "type": "string", "format": "date-time" },
+        "cloudUrl": { "type": "string", "format": "uri" },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "evaluationStatus": { "type": "string" }
+            }
+          }
+        },
+        "errors": { "type": "integer" },
+        "failures": { "type": "integer" },
+        "warnings": { "type": "integer" },
+        "scanTime": { "type": "string", "format": "date-time" },
+        "started": { "type": "string", "format": "date-time" },
+        "ended": { "type": "string", "format": "date-time" },
+        "submitted": { "type": "string", "format": "date-time" },
+        "runnerId": { "type": "string" },
+        "scanDefinition": { "type": "string" },
+        "postProcessingStages": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "IncidentSeverity": {
+      "type": "string",
+      "enum": ["minor", "major", "critical"]
+    },
+    "IncidentStatus": {
+      "type": "string",
+      "enum": ["reported", "investigating", "fixing", "resolved"]
+    },
+    "IncidentContentDTO": {
+      "type": "object",
+      "title": "Incident",
+      "description": "A data quality incident record",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "number": { "type": "integer" },
+        "description": { "type": "string" },
+        "severity": { "$ref": "#/$defs/IncidentSeverity" },
+        "status": { "$ref": "#/$defs/IncidentStatus" },
+        "resolutionNotes": { "type": "string" },
+        "cloudUrl": { "type": "string", "format": "uri" }
+      }
+    },
+    "UpdateIncidentRequest": {
+      "type": "object",
+      "title": "Update Incident Request",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "resolutionNotes": { "type": "string" },
+        "severity": { "$ref": "#/$defs/IncidentSeverity" },
+        "status": { "$ref": "#/$defs/IncidentStatus" }
+      }
+    },
+    "DatasetsContentDTO": {
+      "type": "object",
+      "title": "Dataset",
+      "description": "A Soda Cloud dataset record",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "label": { "type": "string" },
+        "qualifiedName": { "type": "string" },
+        "datasourceId": { "type": "string" },
+        "datasourceName": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "cloudUrl": { "type": "string", "format": "uri" }
+      }
+    },
+    "DiscoveredDatasetContentDTO": {
+      "type": "object",
+      "title": "Discovered Dataset",
+      "description": "A dataset discovered in a datasource but not yet onboarded",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "qualifiedName": { "type": "string" },
+        "datasourceId": { "type": "string" },
+        "onboarded": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "OperationStatusResponse": {
+      "type": "object",
+      "title": "Async Operation Status",
+      "properties": {
+        "id": { "type": "string" },
+        "state": {
+          "type": "string",
+          "enum": ["queued", "processing", "completed", "failed", "cancelled"]
+        },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "AttributeType": {
+      "type": "string",
+      "enum": ["text", "number", "checkbox", "datetime", "singleSelect", "multiSelect"]
+    },
+    "AttributeResourceType": {
+      "type": "string",
+      "enum": ["dataset", "check", "column"]
+    },
+    "CreateAttributeRequest": {
+      "type": "object",
+      "title": "Create Attribute Request",
+      "required": ["label", "name", "resourceType", "type"],
+      "properties": {
+        "label": { "type": "string" },
+        "name": { "type": "string" },
+        "resourceType": { "$ref": "#/$defs/AttributeResourceType" },
+        "type": { "$ref": "#/$defs/AttributeType" },
+        "description": { "type": "string" },
+        "allowedValues": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "RunnerDTO": {
+      "type": "object",
+      "title": "Runner",
+      "description": "A Soda scan runner agent",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "label": { "type": "string" },
+        "type": { "type": "string", "enum": ["SELF_HOSTED", "SODA_HOSTED"] },
+        "isOnline": { "type": "boolean" },
+        "lastSeenTimestamp": { "type": "string", "format": "date-time" },
+        "versions": {
+          "type": "object",
+          "properties": {
+            "agent": { "type": "string" },
+            "library": { "type": "string" },
+            "runner": { "type": "string" }
+          }
+        }
+      }
+    },
+    "CreateSecretRequest": {
+      "type": "object",
+      "title": "Create Secret Request",
+      "required": ["name", "encryptedValue", "encryptionKey"],
+      "properties": {
+        "name": { "type": "string", "pattern": "^\\S+$" },
+        "encryptedValue": { "type": "string" },
+        "encryptionKey": { "type": "string" }
+      }
+    },
+    "CreateContractRequest": {
+      "type": "object",
+      "title": "Create Contract Request",
+      "properties": {
+        "contents": { "type": "string", "description": "Soda contract YAML" },
+        "datasetId": { "type": "string" },
+        "datasetQualifiedName": { "type": "string" }
+      }
+    },
+    "NotificationRuleRequest": {
+      "type": "object",
+      "title": "Notification Rule Request",
+      "required": ["name", "recipients", "ruleType"],
+      "properties": {
+        "name": { "type": "string" },
+        "ruleType": { "type": "string", "enum": ["check", "monitor"] },
+        "status": { "type": "string", "enum": ["active", "paused"] },
+        "filter": { "type": "object" },
+        "recipients": { "type": "array", "items": { "type": "object" } },
+        "customization": { "type": "object" }
+      }
+    }
+  }
+}

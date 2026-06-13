@@ -1,0 +1,34 @@
+{
+  "content": [
+    {
+      "id": "ds_01h9x7mfp4qk3t8n2w6r",
+      "name": "orders",
+      "label": "Orders Table",
+      "qualifiedName": "snowflake.analytics.public.orders",
+      "datasourceId": "src_01h9x7mfp4qk3t8n2w6r",
+      "datasourceName": "Snowflake Analytics",
+      "tags": ["transactions", "finance"],
+      "createdAt": "2026-01-15T08:00:00Z",
+      "updatedAt": "2026-06-13T10:00:00Z",
+      "cloudUrl": "https://cloud.soda.io/datasets/ds_01h9x7mfp4qk3t8n2w6r"
+    },
+    {
+      "id": "ds_02h9x7mfp4qk3t8n2w6s",
+      "name": "customers",
+      "label": "Customer Profiles",
+      "qualifiedName": "snowflake.analytics.public.customers",
+      "datasourceId": "src_01h9x7mfp4qk3t8n2w6r",
+      "datasourceName": "Snowflake Analytics",
+      "tags": ["crm", "profiles"],
+      "createdAt": "2026-01-15T08:00:00Z",
+      "updatedAt": "2026-06-12T09:00:00Z",
+      "cloudUrl": "https://cloud.soda.io/datasets/ds_02h9x7mfp4qk3t8n2w6s"
+    }
+  ],
+  "first": true,
+  "last": true,
+  "number": 0,
+  "size": 10,
+  "totalElements": 2,
+  "totalPages": 1
+}

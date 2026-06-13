@@ -1,0 +1,124 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "soda": "https://docs.soda.io/vocabulary#",
+    "dcat": "https://www.w3.org/ns/dcat#",
+    "dqv": "https://www.w3.org/ns/dqv#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Check": "soda:Check",
+    "Dataset": "dcat:Dataset",
+    "Datasource": "soda:Datasource",
+    "Scan": "soda:Scan",
+    "Incident": "soda:Incident",
+    "Contract": "soda:Contract",
+    "Runner": "soda:Runner",
+    "Attribute": "soda:Attribute",
+    "NotificationRule": "soda:NotificationRule",
+    "Secret": "soda:Secret",
+    "evaluationStatus": "soda:evaluationStatus",
+    "scanState": "soda:scanState",
+    "severity": "soda:severity",
+    "incidentStatus": "soda:incidentStatus",
+    "qualifiedName": "soda:qualifiedName",
+    "cloudUrl": "soda:cloudUrl",
+    "runnerId": "soda:runnerId",
+    "datasourceId": "soda:datasourceId",
+    "datasetId": "soda:datasetId",
+    "checkId": "soda:checkId",
+    "scanId": "soda:scanId",
+    "incidentId": "soda:incidentId",
+    "contractId": "soda:contractId",
+    "isOnline": "soda:isOnline",
+    "runnerType": "soda:runnerType",
+    "attributeType": "soda:attributeType",
+    "resourceType": "soda:resourceType",
+    "encryptedValue": "soda:encryptedValue",
+    "encryptionKey": "soda:encryptionKey",
+    "resolutionNotes": "soda:resolutionNotes",
+    "scanDefinition": "soda:scanDefinition",
+    "ruleType": "soda:ruleType",
+    "allowedValues": "soda:allowedValues",
+    "onboarded": "soda:onboarded",
+    "failures": "soda:failures",
+    "errors": "soda:errors",
+    "warnings": "soda:warnings",
+    "totalElements": "soda:totalElements",
+    "totalPages": "soda:totalPages",
+    "configurationFileContents": "soda:configurationFileContents"
+  },
+  "@graph": [
+    {
+      "@type": "WebAPI",
+      "@id": "https://docs.soda.io/reference/rest-api",
+      "name": "Soda Cloud REST API",
+      "description": "The Soda Cloud REST API enables programmatic access to trigger data quality scans, retrieve check results, update incident status, manage datasets and datasources, define data contracts, and integrate data quality workflows into CI/CD pipelines.",
+      "url": "https://docs.soda.io/reference/rest-api",
+      "provider": {
+        "@type": "Organization",
+        "name": "Soda",
+        "url": "https://soda.io",
+        "sameAs": [
+          "https://github.com/sodadata",
+          "https://www.linkedin.com/company/sodadata",
+          "https://x.com/sodadata"
+        ]
+      },
+      "termsOfService": "https://soda.io/terms",
+      "documentation": "https://docs.soda.io",
+      "endpointUrl": [
+        "https://cloud.soda.io",
+        "https://cloud.us.soda.io"
+      ],
+      "additionalType": "dcat:DataService",
+      "category": [
+        "Data Quality",
+        "Data Observability",
+        "Data Contracts",
+        "Data Testing",
+        "Data Monitoring",
+        "Data Engineering"
+      ]
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://soda.io",
+      "name": "Soda",
+      "description": "AI-native, fully automated data quality platform for data engineering and analytics teams.",
+      "applicationCategory": "Data Quality Platform",
+      "operatingSystem": "Cloud",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://soda.io/pricing"
+      },
+      "featureList": [
+        "Data quality checks with SodaCL",
+        "Automated scan scheduling",
+        "Incident management",
+        "Data contracts",
+        "Column-level metric monitoring",
+        "Anomaly detection",
+        "Multi-cloud datasource support",
+        "CI/CD pipeline integration",
+        "Webhook and notification rules"
+      ],
+      "softwareVersion": "v4",
+      "releaseNotes": "https://docs.soda.io"
+    },
+    {
+      "@type": "dqv:QualityMeasurement",
+      "@id": "soda:CheckEvaluationStatus",
+      "name": "Check Evaluation Status",
+      "description": "The result of evaluating a data quality check.",
+      "dqv:value": {
+        "@type": "schema:ItemList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "pass", "description": "Check condition satisfied" },
+          { "@type": "ListItem", "position": 2, "name": "fail", "description": "Check condition violated" },
+          { "@type": "ListItem", "position": 3, "name": "warn", "description": "Warning threshold crossed" },
+          { "@type": "ListItem", "position": 4, "name": "error", "description": "Check execution error" },
+          { "@type": "ListItem", "position": 5, "name": "unknown", "description": "Status could not be determined" }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "title": "Missing customer IDs in orders table",
+  "description": "Approximately 5% of order records are missing customer_id values, affecting downstream analytics.",
+  "severity": "major",
+  "status": "investigating",
+  "resolutionNotes": ""
+}

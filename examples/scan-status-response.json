@@ -1,0 +1,26 @@
+{
+  "id": "scn_01h9x7mfp4qk3t8n2w6r",
+  "state": "completed",
+  "created": "2026-06-13T10:00:00Z",
+  "cloudUrl": "https://cloud.soda.io/scans/scn_01h9x7mfp4qk3t8n2w6r",
+  "checks": [
+    {
+      "id": "chk_01h9x7mfp4qk3t8n2w6r",
+      "evaluationStatus": "pass"
+    },
+    {
+      "id": "chk_02h9x7mfp4qk3t8n2w6s",
+      "evaluationStatus": "fail"
+    }
+  ],
+  "errors": 0,
+  "failures": 1,
+  "warnings": 0,
+  "scanTime": "2026-06-13T10:00:00Z",
+  "started": "2026-06-13T10:00:05Z",
+  "ended": "2026-06-13T10:00:45Z",
+  "submitted": "2026-06-13T10:00:03Z",
+  "runnerId": "rnr_01h9x7mfp4qk3t8n2w6r",
+  "scanDefinition": "daily_scan",
+  "postProcessingStages": ["incidents", "notifications"]
+}

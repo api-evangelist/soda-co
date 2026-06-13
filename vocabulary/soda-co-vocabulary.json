@@ -1,0 +1,109 @@
+{
+  "vocabulary": {
+    "title": "Soda Data Quality Platform Vocabulary",
+    "description": "Key terms and concepts used in the Soda Cloud REST API and data quality platform.",
+    "source": "https://docs.soda.io/reference/rest-api",
+    "terms": [
+      {
+        "term": "Check",
+        "definition": "A data quality rule applied to a dataset column or table. Checks evaluate conditions such as row counts, missing values, duplicates, or custom SQL expressions and produce a pass/fail/warn/error result.",
+        "relatedTerms": ["SodaCL", "Check Result", "Dataset"]
+      },
+      {
+        "term": "SodaCL",
+        "definition": "Soda Checks Language — the YAML-based domain-specific language used to define data quality checks. SodaCL checks are evaluated during scans.",
+        "relatedTerms": ["Check", "Scan"]
+      },
+      {
+        "term": "Scan",
+        "definition": "The execution of data quality checks against a datasource. A scan runs the configured SodaCL checks and produces check results, incidents, and notifications.",
+        "relatedTerms": ["Check", "Runner", "Scan Definition"]
+      },
+      {
+        "term": "Scan Definition",
+        "definition": "A named configuration that specifies which checks to run and on which schedule. Scan definitions are stored in Soda Cloud and can be triggered programmatically.",
+        "relatedTerms": ["Scan", "Dataset"]
+      },
+      {
+        "term": "Dataset",
+        "definition": "A table, view, or other data object within a datasource that is registered in Soda Cloud for monitoring. Datasets have associated checks, attributes, and quality scores.",
+        "relatedTerms": ["Datasource", "Check", "Contract"]
+      },
+      {
+        "term": "Datasource",
+        "definition": "A connection to a data warehouse, database, or data lake (e.g., Snowflake, BigQuery, Databricks, PostgreSQL, DuckDB). Datasources contain datasets that can be monitored.",
+        "relatedTerms": ["Dataset", "Runner", "Connection Configuration"]
+      },
+      {
+        "term": "Incident",
+        "definition": "A data quality issue automatically created when checks fail. Incidents have severity levels (minor, major, critical) and statuses (reported, investigating, fixing, resolved).",
+        "relatedTerms": ["Check", "Notification Rule", "Alert"]
+      },
+      {
+        "term": "Data Contract",
+        "definition": "A formal specification defining the expected structure, quality standards, and SLAs for a dataset. Contracts can be created manually, as skeletons, or AI-generated, then published and verified.",
+        "relatedTerms": ["Dataset", "Check", "Verification"]
+      },
+      {
+        "term": "Runner",
+        "definition": "An agent process that executes scan workloads. Runners can be self-hosted (deployed in your infrastructure) or Soda-hosted (managed cloud runners).",
+        "relatedTerms": ["Scan", "Datasource", "Agent"]
+      },
+      {
+        "term": "Attribute",
+        "definition": "A custom metadata field that can be attached to datasets, checks, or columns. Attribute types include text, number, checkbox, datetime, singleSelect, and multiSelect.",
+        "relatedTerms": ["Dataset", "Check", "Metadata"]
+      },
+      {
+        "term": "Notification Rule",
+        "definition": "A configuration that defines when and how alerts are sent when check or monitor results meet certain conditions. Rules can filter by severity, dataset, or check status.",
+        "relatedTerms": ["Incident", "Check", "Alert"]
+      },
+      {
+        "term": "Secret",
+        "definition": "An encrypted credential stored in Soda Cloud, used for datasource connections. Secrets are encrypted client-side using a JWK public key before being stored.",
+        "relatedTerms": ["Datasource", "Encryption Key"]
+      },
+      {
+        "term": "Discovered Dataset",
+        "definition": "A table or view found in a datasource during discovery scans but not yet onboarded into Soda Cloud for active monitoring.",
+        "relatedTerms": ["Dataset", "Datasource", "Onboarding"]
+      },
+      {
+        "term": "Onboarding",
+        "definition": "The process of registering a discovered dataset into Soda Cloud for monitoring, check definition, and quality tracking.",
+        "relatedTerms": ["Discovered Dataset", "Dataset"]
+      },
+      {
+        "term": "Column Metric Monitor",
+        "definition": "An automated monitor that tracks statistical metrics (e.g., mean, standard deviation, null rate) for a specific column over time and generates alerts when anomalies are detected.",
+        "relatedTerms": ["Dataset", "Check", "Anomaly Detection"]
+      },
+      {
+        "term": "Custom SQL Monitor",
+        "definition": "A monitor based on a user-defined SQL query that computes a metric value, which is then tracked for anomalies or threshold breaches.",
+        "relatedTerms": ["Dataset", "Check", "Column Metric Monitor"]
+      },
+      {
+        "term": "Basic Authentication",
+        "definition": "The authentication mechanism used by the Soda Cloud REST API. Credentials are base64-encoded in the format api_key_id:api_key_secret and passed in the Authorization header.",
+        "relatedTerms": ["API Key", "Authorization"]
+      },
+      {
+        "term": "API Key",
+        "definition": "A pair of credentials (API Key ID and API Key Secret) used to authenticate with the Soda Cloud REST API. Keys are managed in Soda Cloud profile settings.",
+        "relatedTerms": ["Basic Authentication", "Authorization"]
+      },
+      {
+        "term": "Data Freshness",
+        "definition": "A data quality dimension that measures how recently a dataset was updated. Soda can monitor freshness by checking the maximum value of timestamp columns.",
+        "relatedTerms": ["Check", "Dataset", "Data Quality"]
+      },
+      {
+        "term": "Evaluation Status",
+        "definition": "The result of a check evaluation: pass (condition met), fail (condition violated), warn (warning threshold crossed), error (check execution error), or unknown (could not evaluate).",
+        "relatedTerms": ["Check", "Scan"]
+      }
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "configurationFileContents": "data_source orders_snowflake:\n  type: snowflake\n  connection:\n    username: svc_soda\n    password: ${SNOWFLAKE_PASSWORD}\n    account: mycompany.us-east-1\n    warehouse: COMPUTE_WH\n    database: ANALYTICS\n    schema: PUBLIC\n",
+  "label": "Snowflake Analytics DW",
+  "runnerId": "rnr_01h9x7mfp4qk3t8n2w6r"
+}
