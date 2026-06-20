@@ -8,7 +8,7 @@ description: >
   manage incidents, and integrate data quality workflows into CI/CD pipelines
   and data stacks. Soda supports dozens of data sources including Snowflake,
   BigQuery, Databricks, PostgreSQL, and DuckDB.
-image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 url: https://raw.githubusercontent.com/api-evangelist/soda-co/refs/heads/main/apis.yml
 created: 2026-06-13
 modified: 2026-06-13
@@ -28,7 +28,7 @@ apis:
       scans, retrieve check results, update incident status, manage datasets, and
       integrate data quality workflows into CI/CD pipelines. Supports EU and US
       cloud regions.
-    image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
     humanURL: https://docs.soda.io/reference/rest-api
     baseURL: https://cloud.soda.io
     tags:
