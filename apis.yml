@@ -43,6 +43,12 @@ apis:
       - type: OpenAPI
         url: https://docs.soda.io/reference/rest-api
 common:
+  - type: TrustCenter
+    url: security/soda-co-trust-center.yml
+  - type: DomainSecurity
+    url: security/soda-co-domain-security.yml
+  - type: Authentication
+    url: authentication/soda-co-authentication.yml
   - type: Website
     url: https://soda.io
   - type: Documentation
