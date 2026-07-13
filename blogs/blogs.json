@@ -2,13 +2,14 @@
   "repo": "soda-co",
   "feeds": [
     {
-      "source": "https://soda.io/blog",
-      "feed_url": "",
-      "saved": 2,
-      "method": "agent-scrape"
+      "source": "https://www.linkedin.com/company/sodadata",
+      "feed_url": "https://www.linkedin.com/company/sodadata",
+      "title": "",
+      "saved": 0,
+      "method": "none"
     }
   ],
-  "fetched": "2026-06-27T13:11:18Z",
-  "post_count": 4,
-  "agent_pulled": "2026-06-27"
+  "fetched": "2026-07-11T11:50:51Z",
+  "post_count": 5,
+  "agent_pulled": "2026-07-04"
 }
