@@ -1,0 +1,92 @@
+openapi: 3.1.0
+info:
+  title: Soda Cloud REST Attributes Utility API
+  description: The Soda Cloud REST API enables programmatic access to trigger data quality scans, retrieve check results, update incident status, manage datasets, datasources, contracts, runners, secrets, notification rules, and integrate data quality workflows into CI/CD pipelines. Supports EU and US cloud regions.
+  version: 1.0.0
+  contact:
+    name: Soda Support
+    url: https://soda.io
+servers:
+- url: https://cloud.soda.io
+  description: EU Cloud
+- url: https://cloud.us.soda.io
+  description: US Cloud
+security:
+- basicAuth: []
+tags:
+- name: Utility
+  description: API connectivity and authentication testing
+paths:
+  /api/v1/test-login:
+    get:
+      summary: Test login / verify credentials
+      description: Verifies API connectivity and validates that authentication and authorization details are accurate and the API is ready to accept calls.
+      operationId: testLogin
+      tags:
+      - Utility
+      responses:
+        '200':
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  organisationName:
+                    type: string
+                    description: The name of your organization
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+  responses:
+    Unauthorized:
+      description: Unauthorized - authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    TooManyRequests:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Base64-encoded API key ID and secret: base64(api_key_id:api_key_secret)'

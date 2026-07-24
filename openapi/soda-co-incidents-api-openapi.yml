@@ -1,0 +1,159 @@
+openapi: 3.1.0
+info:
+  title: Soda Cloud REST Attributes Incidents API
+  description: The Soda Cloud REST API enables programmatic access to trigger data quality scans, retrieve check results, update incident status, manage datasets, datasources, contracts, runners, secrets, notification rules, and integrate data quality workflows into CI/CD pipelines. Supports EU and US cloud regions.
+  version: 1.0.0
+  contact:
+    name: Soda Support
+    url: https://soda.io
+servers:
+- url: https://cloud.soda.io
+  description: EU Cloud
+- url: https://cloud.us.soda.io
+  description: US Cloud
+security:
+- basicAuth: []
+tags:
+- name: Incidents
+  description: Data quality incident tracking and management
+paths:
+  /api/v1/incidents/{incidentId}:
+    post:
+      summary: Update an incident
+      description: Update the title, description, severity, status, or resolution notes of an incident.
+      operationId: updateIncident
+      tags:
+      - Incidents
+      parameters:
+      - name: incidentId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Identifier of the incident to update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateIncidentRequest'
+      responses:
+        '200':
+          description: Updated incident
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncidentContentDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  schemas:
+    UpdateIncidentRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        resolutionNotes:
+          type: string
+        severity:
+          type: string
+          enum:
+          - minor
+          - major
+          - critical
+        status:
+          type: string
+          enum:
+          - reported
+          - investigating
+          - fixing
+          - resolved
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    IncidentContentDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        number:
+          type: integer
+        description:
+          type: string
+        severity:
+          type: string
+          enum:
+          - minor
+          - major
+          - critical
+        status:
+          type: string
+          enum:
+          - reported
+          - investigating
+          - fixing
+          - resolved
+        resolutionNotes:
+          type: string
+        cloudUrl:
+          type: string
+          format: uri
+  responses:
+    Unauthorized:
+      description: Unauthorized - authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    TooManyRequests:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Base64-encoded API key ID and secret: base64(api_key_id:api_key_secret)'

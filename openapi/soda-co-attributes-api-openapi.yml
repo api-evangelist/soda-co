@@ -1,0 +1,217 @@
+openapi: 3.1.0
+info:
+  title: Soda Cloud REST Attributes API
+  description: The Soda Cloud REST API enables programmatic access to trigger data quality scans, retrieve check results, update incident status, manage datasets, datasources, contracts, runners, secrets, notification rules, and integrate data quality workflows into CI/CD pipelines. Supports EU and US cloud regions.
+  version: 1.0.0
+  contact:
+    name: Soda Support
+    url: https://soda.io
+servers:
+- url: https://cloud.soda.io
+  description: EU Cloud
+- url: https://cloud.us.soda.io
+  description: US Cloud
+security:
+- basicAuth: []
+tags:
+- name: Attributes
+  description: Custom attribute management for datasets, checks, and columns
+paths:
+  /api/v1/attributes:
+    get:
+      summary: List attributes
+      operationId: listAttributes
+      tags:
+      - Attributes
+      parameters:
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 10
+          maximum: 1000
+          default: 1000
+      - name: page
+        in: query
+        schema:
+          type: integer
+          default: 0
+      - name: resourceType
+        in: query
+        schema:
+          type: string
+          enum:
+          - dataset
+          - check
+          - column
+      responses:
+        '200':
+          description: Paginated list of attributes
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+    post:
+      summary: Create attribute
+      description: Requires MANAGE_ATTRIBUTES permission.
+      operationId: createAttribute
+      tags:
+      - Attributes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAttributeRequest'
+      responses:
+        '200':
+          description: Attribute created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+  /api/v1/attributes/{attributeId}:
+    post:
+      summary: Update attribute
+      description: Requires MANAGE_ATTRIBUTES permission.
+      operationId: updateAttribute
+      tags:
+      - Attributes
+      parameters:
+      - name: attributeId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:
+                  type: string
+                description:
+                  type: string
+                allowedValues:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Attribute updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+    delete:
+      summary: Delete attribute
+      description: Requires MANAGE_ATTRIBUTES permission.
+      operationId: deleteAttribute
+      tags:
+      - Attributes
+      parameters:
+      - name: attributeId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Attribute deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+components:
+  responses:
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Unauthorized - authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    TooManyRequests:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    CreateAttributeRequest:
+      type: object
+      required:
+      - label
+      - name
+      - resourceType
+      - type
+      properties:
+        label:
+          type: string
+        name:
+          type: string
+        resourceType:
+          type: string
+          enum:
+          - dataset
+          - check
+          - column
+        type:
+          type: string
+          enum:
+          - text
+          - number
+          - checkbox
+          - datetime
+          - singleSelect
+          - multiSelect
+        description:
+          type: string
+        allowedValues:
+          type: array
+          items:
+            type: string
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Base64-encoded API key ID and secret: base64(api_key_id:api_key_secret)'

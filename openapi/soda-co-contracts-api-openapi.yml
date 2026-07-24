@@ -1,0 +1,349 @@
+openapi: 3.1.0
+info:
+  title: Soda Cloud REST Attributes Contracts API
+  description: The Soda Cloud REST API enables programmatic access to trigger data quality scans, retrieve check results, update incident status, manage datasets, datasources, contracts, runners, secrets, notification rules, and integrate data quality workflows into CI/CD pipelines. Supports EU and US cloud regions.
+  version: 1.0.0
+  contact:
+    name: Soda Support
+    url: https://soda.io
+servers:
+- url: https://cloud.soda.io
+  description: EU Cloud
+- url: https://cloud.us.soda.io
+  description: US Cloud
+security:
+- basicAuth: []
+tags:
+- name: Contracts
+  description: Data contract definition, publishing, and verification
+paths:
+  /api/v1/contracts:
+    get:
+      summary: List contracts
+      operationId: listContracts
+      tags:
+      - Contracts
+      parameters:
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 10
+          maximum: 1000
+          default: 10
+      - name: page
+        in: query
+        schema:
+          type: integer
+          default: 0
+      - name: datasetId
+        in: query
+        schema:
+          type: string
+      - name: datasetQualifiedName
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Paginated list of contracts
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+    post:
+      summary: Create a contract
+      operationId: createContract
+      tags:
+      - Contracts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContractRequest'
+      responses:
+        '200':
+          description: Contract created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+  /api/v1/contracts/actions/createSkeleton:
+    post:
+      summary: Generate skeleton contract
+      description: Generates a skeleton contract for a dataset (async).
+      operationId: createSkeletonContract
+      tags:
+      - Contracts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                datasetId:
+                  type: string
+                datasetQualifiedName:
+                  type: string
+      responses:
+        '202':
+          description: Generation initiated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+  /api/v1/contracts/actions/createSkeleton/{operationId}:
+    get:
+      summary: Get skeleton contract generation status
+      operationId: getSkeletonContractStatus
+      tags:
+      - Contracts
+      parameters:
+      - name: operationId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Generation status
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+  /api/v1/contracts/actions/generate:
+    post:
+      summary: Generate contracts (AI-powered)
+      description: AI-powered async contract generation for multiple datasets.
+      operationId: generateContracts
+      tags:
+      - Contracts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                datasetIds:
+                  type: array
+                  items:
+                    type: string
+                datasetQualifiedNames:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '202':
+          description: Generation initiated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+  /api/v1/contracts/actions/generate/{operationId}:
+    get:
+      summary: Get contract generation status
+      operationId: getContractGenerationStatus
+      tags:
+      - Contracts
+      parameters:
+      - name: operationId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Generation status
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+  /api/v1/contracts/{contractId}:
+    get:
+      summary: Get a contract
+      operationId: getContract
+      tags:
+      - Contracts
+      parameters:
+      - name: contractId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Contract details
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+    post:
+      summary: Publish a contract
+      operationId: publishContract
+      tags:
+      - Contracts
+      parameters:
+      - name: contractId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - contents
+              properties:
+                contents:
+                  type: string
+                  description: Valid Soda contract YAML
+      responses:
+        '200':
+          description: Contract published
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+  /api/v1/contracts/{contractId}/verify:
+    post:
+      summary: Verify a contract
+      operationId: verifyContract
+      tags:
+      - Contracts
+      parameters:
+      - name: contractId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                checkPaths:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Verification initiated
+          headers:
+            Location:
+              schema:
+                type: string
+            X-Soda-Scan-Id:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+  /api/v1/contracts/{contractId}/versions:
+    get:
+      summary: List contract versions
+      operationId: listContractVersions
+      tags:
+      - Contracts
+      parameters:
+      - name: contractId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 10
+          maximum: 1000
+          default: 10
+      - name: page
+        in: query
+        schema:
+          type: integer
+          default: 0
+      - name: createdBefore
+        in: query
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: Paginated list of contract versions
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+components:
+  schemas:
+    CreateContractRequest:
+      type: object
+      properties:
+        contents:
+          type: string
+          description: Soda contract YAML contents
+        datasetId:
+          type: string
+        datasetQualifiedName:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+  responses:
+    Unauthorized:
+      description: Unauthorized - authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    TooManyRequests:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Base64-encoded API key ID and secret: base64(api_key_id:api_key_secret)'

@@ -1,0 +1,202 @@
+openapi: 3.1.0
+info:
+  title: Soda Cloud REST Attributes Checks API
+  description: The Soda Cloud REST API enables programmatic access to trigger data quality scans, retrieve check results, update incident status, manage datasets, datasources, contracts, runners, secrets, notification rules, and integrate data quality workflows into CI/CD pipelines. Supports EU and US cloud regions.
+  version: 1.0.0
+  contact:
+    name: Soda Support
+    url: https://soda.io
+servers:
+- url: https://cloud.soda.io
+  description: EU Cloud
+- url: https://cloud.us.soda.io
+  description: US Cloud
+security:
+- basicAuth: []
+tags:
+- name: Checks
+  description: Data quality check results and management
+paths:
+  /api/v1/checks:
+    get:
+      summary: List checks
+      description: Retrieve paginated check results. Users see only checks for datasets with View dataset permissions; Admins see all.
+      operationId: listChecks
+      tags:
+      - Checks
+      parameters:
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 10
+          maximum: 1000
+          default: 10
+        description: Number of results per page
+      - name: page
+        in: query
+        schema:
+          type: integer
+          default: 0
+        description: Page number (0-indexed)
+      - name: datasetId
+        in: query
+        schema:
+          type: string
+        description: Filter by specific dataset ID
+      - name: checkIds
+        in: query
+        schema:
+          type: string
+        description: Comma-separated list of check IDs (max 1000, cannot combine with other filters)
+      responses:
+        '200':
+          description: Paginated list of checks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicApiChecksResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/checks/{checkId}:
+    delete:
+      summary: Delete a check
+      description: Deletes a check by ID. Requires Manage checks permission; Admins can delete all checks.
+      operationId: deleteCheck
+      tags:
+      - Checks
+      parameters:
+      - name: checkId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Identifier of the check to delete
+      responses:
+        '204':
+          description: Check deleted successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  schemas:
+    PaginatedResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            type: object
+        first:
+          type: boolean
+        last:
+          type: boolean
+        number:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+    PublicApiChecksResponse:
+      allOf:
+      - $ref: '#/components/schemas/PaginatedResponse'
+      - type: object
+        properties:
+          content:
+            type: array
+            items:
+              $ref: '#/components/schemas/CheckContentDTO'
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    CheckContentDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        datasetId:
+          type: string
+        datasetName:
+          type: string
+        incidentId:
+          type: string
+        evaluationStatus:
+          type: string
+          enum:
+          - pass
+          - fail
+          - warn
+          - error
+          - unknown
+        cloudUrl:
+          type: string
+          format: uri
+  responses:
+    Unauthorized:
+      description: Unauthorized - authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    TooManyRequests:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Base64-encoded API key ID and secret: base64(api_key_id:api_key_secret)'

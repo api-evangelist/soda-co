@@ -1,0 +1,278 @@
+openapi: 3.1.0
+info:
+  title: Soda Cloud REST Attributes Scans API
+  description: The Soda Cloud REST API enables programmatic access to trigger data quality scans, retrieve check results, update incident status, manage datasets, datasources, contracts, runners, secrets, notification rules, and integrate data quality workflows into CI/CD pipelines. Supports EU and US cloud regions.
+  version: 1.0.0
+  contact:
+    name: Soda Support
+    url: https://soda.io
+servers:
+- url: https://cloud.soda.io
+  description: EU Cloud
+- url: https://cloud.us.soda.io
+  description: US Cloud
+security:
+- basicAuth: []
+tags:
+- name: Scans
+  description: Data quality scan execution and monitoring
+paths:
+  /api/v1/scans/{scanId}:
+    get:
+      summary: Get scan status
+      description: Retrieve the status and results of a scan by scan ID.
+      operationId: getScanStatus
+      tags:
+      - Scans
+      parameters:
+      - name: scanId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Scan identifier from the trigger response
+      responses:
+        '200':
+          description: Scan status and results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicApiScanStatusResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Cancel a scan
+      description: Cancels a queued or running scan. Changes state to canceled (if pending) or cancelationRequested (if submitted).
+      operationId: cancelScan
+      tags:
+      - Scans
+      parameters:
+      - name: scanId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Scan identifier
+      responses:
+        '200':
+          description: Scan cancellation initiated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/scans/{scanId}/logs:
+    get:
+      summary: Get scan logs
+      description: Retrieve paginated log entries for a specific scan.
+      operationId: getScanLogs
+      tags:
+      - Scans
+      parameters:
+      - name: scanId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Scan identifier
+      - name: page
+        in: query
+        schema:
+          type: integer
+          default: 0
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 100
+          maximum: 1000
+          default: 1000
+      responses:
+        '200':
+          description: Paginated scan log entries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicApiScanLogsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  schemas:
+    PublicApiScanLogsResponse:
+      allOf:
+      - $ref: '#/components/schemas/PaginatedResponse'
+      - type: object
+        properties:
+          content:
+            type: array
+            items:
+              type: object
+              properties:
+                index:
+                  type: integer
+                level:
+                  type: string
+                  enum:
+                  - debug
+                  - info
+                  - warning
+                  - error
+                message:
+                  type: string
+                timestamp:
+                  type: string
+                  format: date-time
+    PaginatedResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            type: object
+        first:
+          type: boolean
+        last:
+          type: boolean
+        number:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    PublicApiScanStatusResponse:
+      type: object
+      required:
+      - id
+      - state
+      - created
+      - cloudUrl
+      properties:
+        id:
+          type: string
+        state:
+          type: string
+          enum:
+          - queuing
+          - executing
+          - cancelationRequested
+          - canceled
+          - timeOutRequested
+          - timedOut
+          - failed
+          - completedWithErrors
+          - completedWithFailures
+          - completedWithWarnings
+          - completed
+        created:
+          type: string
+          format: date-time
+        cloudUrl:
+          type: string
+          format: uri
+        checks:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              evaluationStatus:
+                type: string
+        errors:
+          type: integer
+        failures:
+          type: integer
+        warnings:
+          type: integer
+        scanTime:
+          type: string
+          format: date-time
+        started:
+          type: string
+          format: date-time
+        ended:
+          type: string
+          format: date-time
+        submitted:
+          type: string
+          format: date-time
+        runnerId:
+          type: string
+        scanDefinition:
+          type: string
+        postProcessingStages:
+          type: array
+          items:
+            type: string
+  responses:
+    Unauthorized:
+      description: Unauthorized - authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    TooManyRequests:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Base64-encoded API key ID and secret: base64(api_key_id:api_key_secret)'

@@ -1,0 +1,184 @@
+openapi: 3.1.0
+info:
+  title: Soda Cloud REST Attributes Runners API
+  description: The Soda Cloud REST API enables programmatic access to trigger data quality scans, retrieve check results, update incident status, manage datasets, datasources, contracts, runners, secrets, notification rules, and integrate data quality workflows into CI/CD pipelines. Supports EU and US cloud regions.
+  version: 1.0.0
+  contact:
+    name: Soda Support
+    url: https://soda.io
+servers:
+- url: https://cloud.soda.io
+  description: EU Cloud
+- url: https://cloud.us.soda.io
+  description: US Cloud
+security:
+- basicAuth: []
+tags:
+- name: Runners
+  description: Scan runner agent management
+paths:
+  /api/v1/runners:
+    get:
+      summary: List runners
+      operationId: listRunners
+      tags:
+      - Runners
+      parameters:
+      - name: size
+        in: query
+        schema:
+          type: integer
+          minimum: 10
+          maximum: 1000
+          default: 10
+      - name: page
+        in: query
+        schema:
+          type: integer
+          default: 0
+      responses:
+        '200':
+          description: Paginated list of runners
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+    post:
+      summary: Create a runner
+      description: Requires MANAGE_DATASOURCES_AND_AGENTS permission. Returns apiKeyId and apiKeySecret (only available at creation time).
+      operationId: createRunner
+      tags:
+      - Runners
+      responses:
+        '200':
+          description: Runner created with credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  apiKeyId:
+                    type: string
+                  apiKeySecret:
+                    type: string
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+  /api/v1/runners/{runnerId}:
+    get:
+      summary: Get a runner
+      operationId: getRunner
+      tags:
+      - Runners
+      parameters:
+      - name: runnerId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Runner details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunnerDTO'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+    delete:
+      summary: Delete a runner
+      description: Only self-hosted runners can be deleted. Cannot delete in-use runners. Requires MANAGE_DATASOURCES_AND_AGENTS permission.
+      operationId: deleteRunner
+      tags:
+      - Runners
+      parameters:
+      - name: runnerId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Runner deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    RunnerDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        label:
+          type: string
+        type:
+          type: string
+          enum:
+          - SELF_HOSTED
+          - SODA_HOSTED
+        isOnline:
+          type: boolean
+        lastSeenTimestamp:
+          type: string
+          format: date-time
+        versions:
+          type: object
+          properties:
+            agent:
+              type: string
+            library:
+              type: string
+            runner:
+              type: string
+  responses:
+    Unauthorized:
+      description: Unauthorized - authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    TooManyRequests:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: 'Base64-encoded API key ID and secret: base64(api_key_id:api_key_secret)'
