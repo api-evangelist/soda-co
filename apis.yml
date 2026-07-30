@@ -8,7 +8,20 @@ description: >
   manage incidents, and integrate data quality workflows into CI/CD pipelines
   and data stacks. Soda supports dozens of data sources including Snowflake,
   BigQuery, Databricks, PostgreSQL, and DuckDB.
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: freemium
+  onboarding: self-serve
+  trial: false
+  try_now: true
+  public: false
+  label: Freemium · Self-serve signup
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/soda-co.png
 url: https://raw.githubusercontent.com/api-evangelist/soda-co/refs/heads/main/apis.yml
 created: 2026-06-13
 modified: 2026-06-13
@@ -21,27 +34,162 @@ tags:
   - Data Monitoring
   - Data Engineering
 apis:
-  - aid: soda-co:soda-cloud-rest-api
-    name: Soda Cloud REST API
-    description: >
-      The Soda Cloud REST API enables programmatic access to trigger data quality
-      scans, retrieve check results, update incident status, manage datasets, and
-      integrate data quality workflows into CI/CD pipelines. Supports EU and US
-      cloud regions.
-    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-    humanURL: https://docs.soda.io/reference/rest-api
-    baseURL: https://cloud.soda.io
-    tags:
-      - Data Quality
-      - Incidents
-      - Checks
-      - Datasets
-      - Scans
-    properties:
-      - type: Documentation
-        url: https://docs.soda.io/reference/rest-api
-      - type: OpenAPI
-        url: https://docs.soda.io/reference/rest-api
+- aid: soda-co:soda-co-attributes-api
+  name: Soda Attributes API
+  description: Custom attribute management for datasets, checks, and columns
+  humanURL: https://docs.soda.io/reference/rest-api
+  baseURL: https://cloud.soda.io
+  tags:
+  - Attributes
+  properties:
+  - type: OpenAPI
+    url: openapi/soda-co-attributes-api-openapi.yml
+  - type: Documentation
+    url: https://docs.soda.io/reference/rest-api
+- aid: soda-co:soda-co-checks-api
+  name: Soda Checks API
+  description: Data quality check results and management
+  humanURL: https://docs.soda.io/reference/rest-api
+  baseURL: https://cloud.soda.io
+  tags:
+  - Checks
+  properties:
+  - type: OpenAPI
+    url: openapi/soda-co-checks-api-openapi.yml
+  - type: Documentation
+    url: https://docs.soda.io/reference/rest-api
+- aid: soda-co:soda-co-contracts-api
+  name: Soda Contracts API
+  description: Data contract definition, publishing, and verification
+  humanURL: https://docs.soda.io/reference/rest-api
+  baseURL: https://cloud.soda.io
+  tags:
+  - Contracts
+  properties:
+  - type: OpenAPI
+    url: openapi/soda-co-contracts-api-openapi.yml
+  - type: Documentation
+    url: https://docs.soda.io/reference/rest-api
+- aid: soda-co:soda-co-datasets-api
+  name: Soda Datasets API
+  description: Dataset management, monitoring, and configuration
+  humanURL: https://docs.soda.io/reference/rest-api
+  baseURL: https://cloud.soda.io
+  tags:
+  - Datasets
+  properties:
+  - type: OpenAPI
+    url: openapi/soda-co-datasets-api-openapi.yml
+  - type: Documentation
+    url: https://docs.soda.io/reference/rest-api
+- aid: soda-co:soda-co-datasources-api
+  name: Soda Datasources API
+  description: Data source connection and configuration management
+  humanURL: https://docs.soda.io/reference/rest-api
+  baseURL: https://cloud.soda.io
+  tags:
+  - Datasources
+  properties:
+  - type: OpenAPI
+    url: openapi/soda-co-datasources-api-openapi.yml
+  - type: Documentation
+    url: https://docs.soda.io/reference/rest-api
+- aid: soda-co:soda-co-discovered-datasets-api
+  name: Soda Discovered Datasets API
+  description: Datasets discovered but not yet onboarded
+  humanURL: https://docs.soda.io/reference/rest-api
+  baseURL: https://cloud.soda.io
+  tags:
+  - Discovered Datasets
+  properties:
+  - type: OpenAPI
+    url: openapi/soda-co-discovered-datasets-api-openapi.yml
+  - type: Documentation
+    url: https://docs.soda.io/reference/rest-api
+- aid: soda-co:soda-co-incidents-api
+  name: Soda Incidents API
+  description: Data quality incident tracking and management
+  humanURL: https://docs.soda.io/reference/rest-api
+  baseURL: https://cloud.soda.io
+  tags:
+  - Incidents
+  properties:
+  - type: OpenAPI
+    url: openapi/soda-co-incidents-api-openapi.yml
+  - type: Documentation
+    url: https://docs.soda.io/reference/rest-api
+- aid: soda-co:soda-co-notification-rules-api
+  name: Soda Notification Rules API
+  description: Alert and notification rule management
+  humanURL: https://docs.soda.io/reference/rest-api
+  baseURL: https://cloud.soda.io
+  tags:
+  - Notification Rules
+  properties:
+  - type: OpenAPI
+    url: openapi/soda-co-notification-rules-api-openapi.yml
+  - type: Documentation
+    url: https://docs.soda.io/reference/rest-api
+- aid: soda-co:soda-co-runners-api
+  name: Soda Runners API
+  description: Scan runner agent management
+  humanURL: https://docs.soda.io/reference/rest-api
+  baseURL: https://cloud.soda.io
+  tags:
+  - Runners
+  properties:
+  - type: OpenAPI
+    url: openapi/soda-co-runners-api-openapi.yml
+  - type: Documentation
+    url: https://docs.soda.io/reference/rest-api
+- aid: soda-co:soda-co-scans-api
+  name: Soda Scans API
+  description: Data quality scan execution and monitoring
+  humanURL: https://docs.soda.io/reference/rest-api
+  baseURL: https://cloud.soda.io
+  tags:
+  - Scans
+  properties:
+  - type: OpenAPI
+    url: openapi/soda-co-scans-api-openapi.yml
+  - type: Documentation
+    url: https://docs.soda.io/reference/rest-api
+- aid: soda-co:soda-co-secrets-api
+  name: Soda Secrets API
+  description: Encrypted secret storage for datasource credentials
+  humanURL: https://docs.soda.io/reference/rest-api
+  baseURL: https://cloud.soda.io
+  tags:
+  - Secrets
+  properties:
+  - type: OpenAPI
+    url: openapi/soda-co-secrets-api-openapi.yml
+  - type: Documentation
+    url: https://docs.soda.io/reference/rest-api
+- aid: soda-co:soda-co-users-api
+  name: Soda Users API
+  description: User and user group management
+  humanURL: https://docs.soda.io/reference/rest-api
+  baseURL: https://cloud.soda.io
+  tags:
+  - Users
+  properties:
+  - type: OpenAPI
+    url: openapi/soda-co-users-api-openapi.yml
+  - type: Documentation
+    url: https://docs.soda.io/reference/rest-api
+- aid: soda-co:soda-co-utility-api
+  name: Soda Utility API
+  description: API connectivity and authentication testing
+  humanURL: https://docs.soda.io/reference/rest-api
+  baseURL: https://cloud.soda.io
+  tags:
+  - Utility
+  properties:
+  - type: OpenAPI
+    url: openapi/soda-co-utility-api-openapi.yml
+  - type: Documentation
+    url: https://docs.soda.io/reference/rest-api
 common:
   - type: AgenticAccess
     url: agentic-access/soda-co-agentic-access.yml
