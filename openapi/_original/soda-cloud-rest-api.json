@@ -1,0 +1,2207 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Soda Cloud REST API",
+    "description": "The Soda Cloud REST API enables programmatic access to trigger data quality scans, retrieve check results, update incident status, manage datasets, datasources, contracts, runners, secrets, notification rules, and integrate data quality workflows into CI/CD pipelines. Supports EU and US cloud regions.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Soda Support",
+      "url": "https://soda.io"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://cloud.soda.io",
+      "description": "EU Cloud"
+    },
+    {
+      "url": "https://cloud.us.soda.io",
+      "description": "US Cloud"
+    }
+  ],
+  "security": [
+    {
+      "basicAuth": []
+    }
+  ],
+  "paths": {
+    "/api/v1/test-login": {
+      "get": {
+        "summary": "Test login / verify credentials",
+        "description": "Verifies API connectivity and validates that authentication and authorization details are accurate and the API is ready to accept calls.",
+        "operationId": "testLogin",
+        "tags": ["Utility"],
+        "responses": {
+          "200": {
+            "description": "Successful authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "organisationName": {
+                      "type": "string",
+                      "description": "The name of your organization"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/v1/checks": {
+      "get": {
+        "summary": "List checks",
+        "description": "Retrieve paginated check results. Users see only checks for datasets with View dataset permissions; Admins see all.",
+        "operationId": "listChecks",
+        "tags": ["Checks"],
+        "parameters": [
+          {
+            "name": "size",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 10, "maximum": 1000, "default": 10 },
+            "description": "Number of results per page"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 0 },
+            "description": "Page number (0-indexed)"
+          },
+          {
+            "name": "datasetId",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by specific dataset ID"
+          },
+          {
+            "name": "checkIds",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Comma-separated list of check IDs (max 1000, cannot combine with other filters)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of checks",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PublicApiChecksResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/v1/checks/{checkId}": {
+      "delete": {
+        "summary": "Delete a check",
+        "description": "Deletes a check by ID. Requires Manage checks permission; Admins can delete all checks.",
+        "operationId": "deleteCheck",
+        "tags": ["Checks"],
+        "parameters": [
+          {
+            "name": "checkId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Identifier of the check to delete"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Check deleted successfully" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/v1/scans/{scanId}": {
+      "get": {
+        "summary": "Get scan status",
+        "description": "Retrieve the status and results of a scan by scan ID.",
+        "operationId": "getScanStatus",
+        "tags": ["Scans"],
+        "parameters": [
+          {
+            "name": "scanId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Scan identifier from the trigger response"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scan status and results",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PublicApiScanStatusResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      },
+      "delete": {
+        "summary": "Cancel a scan",
+        "description": "Cancels a queued or running scan. Changes state to canceled (if pending) or cancelationRequested (if submitted).",
+        "operationId": "cancelScan",
+        "tags": ["Scans"],
+        "parameters": [
+          {
+            "name": "scanId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Scan identifier"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Scan cancellation initiated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/v1/scans/{scanId}/logs": {
+      "get": {
+        "summary": "Get scan logs",
+        "description": "Retrieve paginated log entries for a specific scan.",
+        "operationId": "getScanLogs",
+        "tags": ["Scans"],
+        "parameters": [
+          {
+            "name": "scanId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Scan identifier"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 0 }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 100, "maximum": 1000, "default": 1000 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated scan log entries",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PublicApiScanLogsResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/v1/incidents/{incidentId}": {
+      "post": {
+        "summary": "Update an incident",
+        "description": "Update the title, description, severity, status, or resolution notes of an incident.",
+        "operationId": "updateIncident",
+        "tags": ["Incidents"],
+        "parameters": [
+          {
+            "name": "incidentId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Identifier of the incident to update"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateIncidentRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated incident",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/IncidentContentDTO" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/v1/datasets": {
+      "get": {
+        "summary": "List datasets",
+        "description": "Retrieve a paginated list of datasets with optional filtering.",
+        "operationId": "listDatasets",
+        "tags": ["Datasets"],
+        "parameters": [
+          {
+            "name": "size",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 10, "maximum": 1000, "default": 10 }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 0 }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "ISO 8601 timestamp filter"
+          },
+          {
+            "name": "datasourceName",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of datasets",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PublicApiDatasetsResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/v1/datasets/byDatasetQualifiedName/{datasetQualifiedName}": {
+      "get": {
+        "summary": "Get dataset by qualified name",
+        "description": "Retrieve a single dataset by its qualified name.",
+        "operationId": "getDatasetByQualifiedName",
+        "tags": ["Datasets"],
+        "parameters": [
+          {
+            "name": "datasetQualifiedName",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dataset details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DatasetsContentDTO" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/v1/datasets/{datasetId}": {
+      "get": {
+        "summary": "Get dataset by ID",
+        "description": "Retrieve a single dataset by its ID.",
+        "operationId": "getDataset",
+        "tags": ["Datasets"],
+        "parameters": [
+          {
+            "name": "datasetId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dataset details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DatasetsContentDTO" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      },
+      "post": {
+        "summary": "Update dataset",
+        "description": "Update dataset metadata including label, tags, attributes, owners, and configuration settings.",
+        "operationId": "updateDataset",
+        "tags": ["Datasets"],
+        "parameters": [
+          {
+            "name": "datasetId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PublicApiUpdateDatasetDTO" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated dataset",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DatasetsContentDTO" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      },
+      "delete": {
+        "summary": "Delete dataset",
+        "description": "Delete a dataset. Deletion is not immediate and can take some time to complete.",
+        "operationId": "deleteDataset",
+        "tags": ["Datasets"],
+        "parameters": [
+          {
+            "name": "datasetId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deletion initiated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/v1/datasets/roles": {
+      "get": {
+        "summary": "List dataset roles",
+        "operationId": "listDatasetRoles",
+        "tags": ["Datasets"],
+        "parameters": [
+          { "name": "size", "in": "query", "schema": { "type": "integer", "minimum": 10, "maximum": 100, "default": 100 } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 0 } }
+        ],
+        "responses": {
+          "200": { "description": "List of dataset roles", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PaginatedResponse" } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "post": {
+        "summary": "Create dataset role",
+        "operationId": "createDatasetRole",
+        "tags": ["Datasets"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DatasetRoleRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Created role" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/datasets/roles/{roleId}": {
+      "post": {
+        "summary": "Update dataset role",
+        "operationId": "updateDatasetRole",
+        "tags": ["Datasets"],
+        "parameters": [
+          { "name": "roleId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DatasetRoleRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated role" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "delete": {
+        "summary": "Delete dataset role",
+        "operationId": "deleteDatasetRole",
+        "tags": ["Datasets"],
+        "parameters": [
+          { "name": "roleId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Role deleted" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/datasets/{datasetId}/columnAttributes": {
+      "post": {
+        "summary": "Set column attributes in bulk",
+        "operationId": "setColumnAttributes",
+        "tags": ["Datasets"],
+        "parameters": [
+          { "name": "datasetId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Mapping of column names to attribute key-value pairs"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Attributes set" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/datasets/{datasetId}/columnMetricMonitors": {
+      "post": {
+        "summary": "Create column metric monitor",
+        "operationId": "createColumnMetricMonitor",
+        "tags": ["Datasets"],
+        "parameters": [
+          { "name": "datasetId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ColumnMetricMonitorRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Monitor created" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/datasets/{datasetId}/columnMetricMonitors/{monitorId}": {
+      "post": {
+        "summary": "Update column metric monitor",
+        "operationId": "updateColumnMetricMonitor",
+        "tags": ["Datasets"],
+        "parameters": [
+          { "name": "datasetId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "monitorId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "type": "object" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Monitor updated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "delete": {
+        "summary": "Delete column metric monitor",
+        "operationId": "deleteColumnMetricMonitor",
+        "tags": ["Datasets"],
+        "parameters": [
+          { "name": "datasetId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "monitorId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Monitor deleted" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/datasets/{datasetId}/customSqlMonitors": {
+      "post": {
+        "summary": "Create custom SQL monitor",
+        "operationId": "createCustomSqlMonitor",
+        "tags": ["Datasets"],
+        "parameters": [
+          { "name": "datasetId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CustomSqlMonitorRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Monitor created" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/datasets/{datasetId}/customSqlMonitors/{monitorId}": {
+      "post": {
+        "summary": "Update custom SQL monitor",
+        "operationId": "updateCustomSqlMonitor",
+        "tags": ["Datasets"],
+        "parameters": [
+          { "name": "datasetId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "monitorId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "type": "object" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Monitor updated" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "delete": {
+        "summary": "Delete custom SQL monitor",
+        "operationId": "deleteCustomSqlMonitor",
+        "tags": ["Datasets"],
+        "parameters": [
+          { "name": "datasetId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "monitorId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Monitor deleted" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/datasets/{datasetId}/computeWarehouse": {
+      "get": {
+        "summary": "Get dataset compute warehouse configuration",
+        "operationId": "getDatasetComputeWarehouse",
+        "tags": ["Datasets"],
+        "parameters": [
+          { "name": "datasetId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Compute warehouse configuration" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/datasets/{datasetId}/diagnosticsWarehouse": {
+      "get": {
+        "summary": "Get dataset diagnostics warehouse information",
+        "operationId": "getDatasetDiagnosticsWarehouse",
+        "tags": ["Datasets"],
+        "parameters": [
+          { "name": "datasetId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Diagnostics warehouse information" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/discoveredDatasets": {
+      "get": {
+        "summary": "List discovered datasets",
+        "description": "Retrieve a paginated list of discovered datasets available for onboarding.",
+        "operationId": "listDiscoveredDatasets",
+        "tags": ["Discovered Datasets"],
+        "parameters": [
+          { "name": "size", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 1000, "default": 10 } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 0 } },
+          { "name": "datasourceId", "in": "query", "schema": { "type": "string" }, "description": "Filter by data source" },
+          { "name": "search", "in": "query", "schema": { "type": "string" }, "description": "Search by dataset name" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of discovered datasets",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PublicApiDiscoveredDatasetsResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/api/v1/datasources": {
+      "get": {
+        "summary": "List datasources",
+        "operationId": "listDatasources",
+        "tags": ["Datasources"],
+        "parameters": [
+          { "name": "size", "in": "query", "schema": { "type": "integer", "minimum": 10, "maximum": 1000, "default": 10 } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 0 } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Paginated list of datasources", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PaginatedResponse" } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "post": {
+        "summary": "Create datasource",
+        "description": "Create a new V4 datasource from a YAML configuration.",
+        "operationId": "createDatasource",
+        "tags": ["Datasources"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateDatasourceRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Datasource created" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/datasources/actions/testConnection": {
+      "post": {
+        "summary": "Test datasource connection",
+        "description": "Initiates an async connection test. Returns 202 with operation ID to poll.",
+        "operationId": "testDatasourceConnection",
+        "tags": ["Datasources"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["configurationFileContents", "runnerId"],
+                "properties": {
+                  "configurationFileContents": { "type": "string" },
+                  "runnerId": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": { "description": "Test initiated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/datasources/actions/testConnection/{operationId}": {
+      "get": {
+        "summary": "Poll connection test status",
+        "operationId": "getConnectionTestStatus",
+        "tags": ["Datasources"],
+        "parameters": [
+          { "name": "operationId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Operation status", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OperationStatusResponse" } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/datasources/roles": {
+      "get": {
+        "summary": "List datasource roles",
+        "operationId": "listDatasourceRoles",
+        "tags": ["Datasources"],
+        "parameters": [
+          { "name": "size", "in": "query", "schema": { "type": "integer", "default": 10 } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 0 } }
+        ],
+        "responses": {
+          "200": { "description": "List of roles" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "post": {
+        "summary": "Create datasource role",
+        "operationId": "createDatasourceRole",
+        "tags": ["Datasources"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DatasourceRoleRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Role created" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/datasources/roles/{roleId}": {
+      "post": {
+        "summary": "Update datasource role",
+        "operationId": "updateDatasourceRole",
+        "tags": ["Datasources"],
+        "parameters": [
+          { "name": "roleId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DatasourceRoleRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Role updated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "delete": {
+        "summary": "Delete datasource role",
+        "operationId": "deleteDatasourceRole",
+        "tags": ["Datasources"],
+        "parameters": [
+          { "name": "roleId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Role deleted (async)" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/datasources/{datasourceId}": {
+      "get": {
+        "summary": "Get datasource",
+        "operationId": "getDatasource",
+        "tags": ["Datasources"],
+        "parameters": [
+          { "name": "datasourceId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Datasource details" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "post": {
+        "summary": "Update datasource",
+        "operationId": "updateDatasource",
+        "tags": ["Datasources"],
+        "parameters": [
+          { "name": "datasourceId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "configurationFileContents": { "type": "string" },
+                  "label": { "type": "string" },
+                  "runnerId": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Datasource updated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "delete": {
+        "summary": "Delete datasource",
+        "description": "Remove datasource and all associated resources (async operation).",
+        "operationId": "deleteDatasource",
+        "tags": ["Datasources"],
+        "parameters": [
+          { "name": "datasourceId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Deletion initiated" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/datasources/{datasourceId}/diagnosticsWarehouse": {
+      "get": {
+        "summary": "Get datasource diagnostics warehouse config",
+        "operationId": "getDatasourceDiagnosticsWarehouse",
+        "tags": ["Datasources"],
+        "parameters": [
+          { "name": "datasourceId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Diagnostics warehouse configuration" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "post": {
+        "summary": "Update datasource diagnostics warehouse",
+        "operationId": "updateDatasourceDiagnosticsWarehouse",
+        "tags": ["Datasources"],
+        "parameters": [
+          { "name": "datasourceId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "type": "object" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/datasources/{datasourceId}/discover": {
+      "post": {
+        "summary": "Trigger on-demand discovery scan",
+        "operationId": "triggerDiscovery",
+        "tags": ["Datasources"],
+        "parameters": [
+          { "name": "datasourceId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Discovery scan triggered" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/datasources/{datasourceId}/onboardDatasets": {
+      "post": {
+        "summary": "Onboard datasets",
+        "description": "Async operation to onboard discovered datasets from a datasource.",
+        "operationId": "onboardDatasets",
+        "tags": ["Datasources"],
+        "parameters": [
+          { "name": "datasourceId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["discoveredDatasetIds"],
+                "properties": {
+                  "discoveredDatasetIds": { "type": "array", "items": { "type": "string" } }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": { "description": "Onboarding initiated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/datasources/{datasourceId}/onboardDatasets/{operationId}": {
+      "get": {
+        "summary": "Poll onboarding operation status",
+        "operationId": "getOnboardingStatus",
+        "tags": ["Datasources"],
+        "parameters": [
+          { "name": "datasourceId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "operationId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Onboarding status", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OperationStatusResponse" } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/datasources/{datasourceId}/responsibilities": {
+      "get": {
+        "summary": "List datasource responsibilities",
+        "operationId": "listDatasourceResponsibilities",
+        "tags": ["Datasources"],
+        "parameters": [
+          { "name": "datasourceId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "User/group permission assignments" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "post": {
+        "summary": "Update datasource responsibilities",
+        "operationId": "updateDatasourceResponsibilities",
+        "tags": ["Datasources"],
+        "parameters": [
+          { "name": "datasourceId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "responsibilities": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "roleId": { "type": "string" },
+                        "type": { "type": "string", "enum": ["user", "userGroup"] },
+                        "userId": { "type": "string" },
+                        "userGroupId": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Responsibilities updated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/contracts": {
+      "get": {
+        "summary": "List contracts",
+        "operationId": "listContracts",
+        "tags": ["Contracts"],
+        "parameters": [
+          { "name": "size", "in": "query", "schema": { "type": "integer", "minimum": 10, "maximum": 1000, "default": 10 } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 0 } },
+          { "name": "datasetId", "in": "query", "schema": { "type": "string" } },
+          { "name": "datasetQualifiedName", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Paginated list of contracts" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "post": {
+        "summary": "Create a contract",
+        "operationId": "createContract",
+        "tags": ["Contracts"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateContractRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Contract created" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/contracts/actions/createSkeleton": {
+      "post": {
+        "summary": "Generate skeleton contract",
+        "description": "Generates a skeleton contract for a dataset (async).",
+        "operationId": "createSkeletonContract",
+        "tags": ["Contracts"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "datasetId": { "type": "string" },
+                  "datasetQualifiedName": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": { "description": "Generation initiated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/contracts/actions/createSkeleton/{operationId}": {
+      "get": {
+        "summary": "Get skeleton contract generation status",
+        "operationId": "getSkeletonContractStatus",
+        "tags": ["Contracts"],
+        "parameters": [
+          { "name": "operationId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Generation status" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/contracts/actions/generate": {
+      "post": {
+        "summary": "Generate contracts (AI-powered)",
+        "description": "AI-powered async contract generation for multiple datasets.",
+        "operationId": "generateContracts",
+        "tags": ["Contracts"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "datasetIds": { "type": "array", "items": { "type": "string" } },
+                  "datasetQualifiedNames": { "type": "array", "items": { "type": "string" } }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": { "description": "Generation initiated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/contracts/actions/generate/{operationId}": {
+      "get": {
+        "summary": "Get contract generation status",
+        "operationId": "getContractGenerationStatus",
+        "tags": ["Contracts"],
+        "parameters": [
+          { "name": "operationId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Generation status" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/contracts/{contractId}": {
+      "get": {
+        "summary": "Get a contract",
+        "operationId": "getContract",
+        "tags": ["Contracts"],
+        "parameters": [
+          { "name": "contractId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Contract details" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "post": {
+        "summary": "Publish a contract",
+        "operationId": "publishContract",
+        "tags": ["Contracts"],
+        "parameters": [
+          { "name": "contractId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["contents"],
+                "properties": {
+                  "contents": { "type": "string", "description": "Valid Soda contract YAML" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Contract published" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/contracts/{contractId}/verify": {
+      "post": {
+        "summary": "Verify a contract",
+        "operationId": "verifyContract",
+        "tags": ["Contracts"],
+        "parameters": [
+          { "name": "contractId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "checkPaths": { "type": "array", "items": { "type": "string" } }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Verification initiated",
+            "headers": {
+              "Location": { "schema": { "type": "string" } },
+              "X-Soda-Scan-Id": { "schema": { "type": "string" } }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/contracts/{contractId}/versions": {
+      "get": {
+        "summary": "List contract versions",
+        "operationId": "listContractVersions",
+        "tags": ["Contracts"],
+        "parameters": [
+          { "name": "contractId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "size", "in": "query", "schema": { "type": "integer", "minimum": 10, "maximum": 1000, "default": 10 } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 0 } },
+          { "name": "createdBefore", "in": "query", "schema": { "type": "string", "format": "date-time" } }
+        ],
+        "responses": {
+          "200": { "description": "Paginated list of contract versions" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/attributes": {
+      "get": {
+        "summary": "List attributes",
+        "operationId": "listAttributes",
+        "tags": ["Attributes"],
+        "parameters": [
+          { "name": "size", "in": "query", "schema": { "type": "integer", "minimum": 10, "maximum": 1000, "default": 1000 } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 0 } },
+          { "name": "resourceType", "in": "query", "schema": { "type": "string", "enum": ["dataset", "check", "column"] } }
+        ],
+        "responses": {
+          "200": { "description": "Paginated list of attributes" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "post": {
+        "summary": "Create attribute",
+        "description": "Requires MANAGE_ATTRIBUTES permission.",
+        "operationId": "createAttribute",
+        "tags": ["Attributes"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateAttributeRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Attribute created" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/attributes/{attributeId}": {
+      "post": {
+        "summary": "Update attribute",
+        "description": "Requires MANAGE_ATTRIBUTES permission.",
+        "operationId": "updateAttribute",
+        "tags": ["Attributes"],
+        "parameters": [
+          { "name": "attributeId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "label": { "type": "string" },
+                  "description": { "type": "string" },
+                  "allowedValues": { "type": "array", "items": { "type": "string" } }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Attribute updated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "delete": {
+        "summary": "Delete attribute",
+        "description": "Requires MANAGE_ATTRIBUTES permission.",
+        "operationId": "deleteAttribute",
+        "tags": ["Attributes"],
+        "parameters": [
+          { "name": "attributeId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Attribute deleted" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/notificationRules": {
+      "get": {
+        "summary": "List notification rules",
+        "operationId": "listNotificationRules",
+        "tags": ["Notification Rules"],
+        "parameters": [
+          { "name": "size", "in": "query", "schema": { "type": "integer", "minimum": 10, "maximum": 1000, "default": 10 } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 0 } }
+        ],
+        "responses": {
+          "200": { "description": "Paginated list of notification rules" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "post": {
+        "summary": "Create notification rule",
+        "description": "Requires MANAGE_NOTIFICATION_RULES permission.",
+        "operationId": "createNotificationRule",
+        "tags": ["Notification Rules"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/NotificationRuleRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Notification rule created" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/notificationRules/{notificationRuleId}": {
+      "post": {
+        "summary": "Update notification rule",
+        "description": "Requires MANAGE_NOTIFICATION_RULES permission. Performs full replacement.",
+        "operationId": "updateNotificationRule",
+        "tags": ["Notification Rules"],
+        "parameters": [
+          { "name": "notificationRuleId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/NotificationRuleRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Notification rule updated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "delete": {
+        "summary": "Delete notification rule",
+        "description": "Requires MANAGE_NOTIFICATION_RULES permission.",
+        "operationId": "deleteNotificationRule",
+        "tags": ["Notification Rules"],
+        "parameters": [
+          { "name": "notificationRuleId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Rule deleted" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/runners": {
+      "get": {
+        "summary": "List runners",
+        "operationId": "listRunners",
+        "tags": ["Runners"],
+        "parameters": [
+          { "name": "size", "in": "query", "schema": { "type": "integer", "minimum": 10, "maximum": 1000, "default": 10 } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 0 } }
+        ],
+        "responses": {
+          "200": { "description": "Paginated list of runners" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "post": {
+        "summary": "Create a runner",
+        "description": "Requires MANAGE_DATASOURCES_AND_AGENTS permission. Returns apiKeyId and apiKeySecret (only available at creation time).",
+        "operationId": "createRunner",
+        "tags": ["Runners"],
+        "responses": {
+          "200": {
+            "description": "Runner created with credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "apiKeyId": { "type": "string" },
+                    "apiKeySecret": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/runners/{runnerId}": {
+      "get": {
+        "summary": "Get a runner",
+        "operationId": "getRunner",
+        "tags": ["Runners"],
+        "parameters": [
+          { "name": "runnerId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Runner details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RunnerDTO" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "delete": {
+        "summary": "Delete a runner",
+        "description": "Only self-hosted runners can be deleted. Cannot delete in-use runners. Requires MANAGE_DATASOURCES_AND_AGENTS permission.",
+        "operationId": "deleteRunner",
+        "tags": ["Runners"],
+        "parameters": [
+          { "name": "runnerId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Runner deleted" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/secrets": {
+      "get": {
+        "summary": "List secrets",
+        "description": "Requires MANAGE_DATASOURCES_AND_AGENTS permission.",
+        "operationId": "listSecrets",
+        "tags": ["Secrets"],
+        "parameters": [
+          { "name": "size", "in": "query", "schema": { "type": "integer", "minimum": 10, "maximum": 1000, "default": 10 } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 0 } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Paginated list of secrets" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "post": {
+        "summary": "Create secret",
+        "operationId": "createSecret",
+        "tags": ["Secrets"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateSecretRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Secret created" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/secrets/{secretId}": {
+      "post": {
+        "summary": "Update secret",
+        "operationId": "updateSecret",
+        "tags": ["Secrets"],
+        "parameters": [
+          { "name": "secretId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateSecretRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Secret updated" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "delete": {
+        "summary": "Delete secret",
+        "operationId": "deleteSecret",
+        "tags": ["Secrets"],
+        "parameters": [
+          { "name": "secretId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Secret deleted" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/secretsPublicKey": {
+      "get": {
+        "summary": "Get encryption public key",
+        "description": "Retrieve the JWK format public key for encrypting secrets.",
+        "operationId": "getSecretsPublicKey",
+        "tags": ["Secrets"],
+        "responses": {
+          "200": { "description": "JWK format public key" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/userGroups": {
+      "get": {
+        "summary": "List user groups",
+        "operationId": "listUserGroups",
+        "tags": ["Users"],
+        "parameters": [
+          { "name": "size", "in": "query", "schema": { "type": "integer", "minimum": 10, "maximum": 1000, "default": 1000 } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 0 } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Paginated list of user groups" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "post": {
+        "summary": "Create user group",
+        "operationId": "createUserGroup",
+        "tags": ["Users"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "userIds": { "type": "array", "items": { "type": "string" } }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "User group created" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/userGroups/{userGroupId}": {
+      "get": {
+        "summary": "Get user group",
+        "operationId": "getUserGroup",
+        "tags": ["Users"],
+        "parameters": [
+          { "name": "userGroupId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "User group details" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "post": {
+        "summary": "Update user group",
+        "operationId": "updateUserGroup",
+        "tags": ["Users"],
+        "parameters": [
+          { "name": "userGroupId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userIds": { "type": "array", "items": { "type": "string" } }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "User group updated" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "delete": {
+        "summary": "Delete user group",
+        "operationId": "deleteUserGroup",
+        "tags": ["Users"],
+        "parameters": [
+          { "name": "userGroupId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "User group deleted" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "summary": "List users",
+        "operationId": "listUsers",
+        "tags": ["Users"],
+        "parameters": [
+          { "name": "size", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 1000, "default": 1000 } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 0 } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Paginated list of users" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      },
+      "post": {
+        "summary": "Invite users",
+        "description": "Send invitations to new users (up to 10 per request).",
+        "operationId": "inviteUsers",
+        "tags": ["Users"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "emails": { "type": "array", "items": { "type": "string", "format": "email" }, "maxItems": 10 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Invitations sent" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/api/v1/users/{userId}/disable": {
+      "post": {
+        "summary": "Disable user",
+        "description": "Deactivate a user account.",
+        "operationId": "disableUser",
+        "tags": ["Users"],
+        "parameters": [
+          { "name": "userId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "User disabled" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic",
+        "description": "Base64-encoded API key ID and secret: base64(api_key_id:api_key_secret)"
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Unauthorized - authentication required",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Forbidden - insufficient permissions",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "TooManyRequests": {
+        "description": "Rate limit exceeded",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      },
+      "PaginatedResponse": {
+        "type": "object",
+        "properties": {
+          "content": { "type": "array", "items": { "type": "object" } },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" },
+          "number": { "type": "integer" },
+          "size": { "type": "integer" },
+          "totalElements": { "type": "integer" },
+          "totalPages": { "type": "integer" }
+        }
+      },
+      "PublicApiChecksResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/PaginatedResponse" },
+          {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/CheckContentDTO" }
+              }
+            }
+          }
+        ]
+      },
+      "CheckContentDTO": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "datasetId": { "type": "string" },
+          "datasetName": { "type": "string" },
+          "incidentId": { "type": "string" },
+          "evaluationStatus": {
+            "type": "string",
+            "enum": ["pass", "fail", "warn", "error", "unknown"]
+          },
+          "cloudUrl": { "type": "string", "format": "uri" }
+        }
+      },
+      "PublicApiScanStatusResponse": {
+        "type": "object",
+        "required": ["id", "state", "created", "cloudUrl"],
+        "properties": {
+          "id": { "type": "string" },
+          "state": {
+            "type": "string",
+            "enum": ["queuing", "executing", "cancelationRequested", "canceled", "timeOutRequested", "timedOut", "failed", "completedWithErrors", "completedWithFailures", "completedWithWarnings", "completed"]
+          },
+          "created": { "type": "string", "format": "date-time" },
+          "cloudUrl": { "type": "string", "format": "uri" },
+          "checks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "evaluationStatus": { "type": "string" }
+              }
+            }
+          },
+          "errors": { "type": "integer" },
+          "failures": { "type": "integer" },
+          "warnings": { "type": "integer" },
+          "scanTime": { "type": "string", "format": "date-time" },
+          "started": { "type": "string", "format": "date-time" },
+          "ended": { "type": "string", "format": "date-time" },
+          "submitted": { "type": "string", "format": "date-time" },
+          "runnerId": { "type": "string" },
+          "scanDefinition": { "type": "string" },
+          "postProcessingStages": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "PublicApiScanLogsResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/PaginatedResponse" },
+          {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "index": { "type": "integer" },
+                    "level": { "type": "string", "enum": ["debug", "info", "warning", "error"] },
+                    "message": { "type": "string" },
+                    "timestamp": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "UpdateIncidentRequest": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "resolutionNotes": { "type": "string" },
+          "severity": { "type": "string", "enum": ["minor", "major", "critical"] },
+          "status": { "type": "string", "enum": ["reported", "investigating", "fixing", "resolved"] }
+        }
+      },
+      "IncidentContentDTO": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "number": { "type": "integer" },
+          "description": { "type": "string" },
+          "severity": { "type": "string", "enum": ["minor", "major", "critical"] },
+          "status": { "type": "string", "enum": ["reported", "investigating", "fixing", "resolved"] },
+          "resolutionNotes": { "type": "string" },
+          "cloudUrl": { "type": "string", "format": "uri" }
+        }
+      },
+      "PublicApiDatasetsResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/PaginatedResponse" },
+          {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/DatasetsContentDTO" }
+              }
+            }
+          }
+        ]
+      },
+      "DatasetsContentDTO": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "label": { "type": "string" },
+          "qualifiedName": { "type": "string" },
+          "datasourceId": { "type": "string" },
+          "datasourceName": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "cloudUrl": { "type": "string", "format": "uri" }
+        }
+      },
+      "PublicApiUpdateDatasetDTO": {
+        "type": "object",
+        "properties": {
+          "label": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "attributes": { "type": "object" },
+          "owners": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "PublicApiDiscoveredDatasetsResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/PaginatedResponse" },
+          {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "name": { "type": "string" },
+                    "qualifiedName": { "type": "string" },
+                    "datasourceId": { "type": "string" },
+                    "onboarded": { "type": "boolean" },
+                    "createdAt": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "DatasetRoleRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "viewDataset": { "type": "boolean" },
+          "configureDataset": { "type": "boolean" },
+          "manageDataset": { "type": "boolean" },
+          "deleteDataset": { "type": "boolean" }
+        }
+      },
+      "ColumnMetricMonitorRequest": {
+        "type": "object",
+        "properties": {
+          "columnName": { "type": "string" },
+          "metricType": { "type": "string" },
+          "configuration": { "type": "object" }
+        }
+      },
+      "CustomSqlMonitorRequest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "sqlQuery": { "type": "string" },
+          "resultMetric": { "type": "string" },
+          "configuration": { "type": "object" }
+        }
+      },
+      "CreateDatasourceRequest": {
+        "type": "object",
+        "required": ["configurationFileContents"],
+        "properties": {
+          "configurationFileContents": { "type": "string", "description": "YAML configuration for the datasource" },
+          "label": { "type": "string" },
+          "runnerId": { "type": "string" }
+        }
+      },
+      "DatasourceRoleRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "viewDatasource": { "type": "boolean" },
+          "createDatasets": { "type": "boolean" },
+          "manageDatasourceSettings": { "type": "boolean" },
+          "managePermissions": { "type": "boolean" },
+          "deleteDatasource": { "type": "boolean" }
+        }
+      },
+      "OperationStatusResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "state": { "type": "string", "enum": ["queued", "processing", "completed", "failed", "cancelled"] },
+          "message": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CreateContractRequest": {
+        "type": "object",
+        "properties": {
+          "contents": { "type": "string", "description": "Soda contract YAML contents" },
+          "datasetId": { "type": "string" },
+          "datasetQualifiedName": { "type": "string" }
+        }
+      },
+      "CreateAttributeRequest": {
+        "type": "object",
+        "required": ["label", "name", "resourceType", "type"],
+        "properties": {
+          "label": { "type": "string" },
+          "name": { "type": "string" },
+          "resourceType": { "type": "string", "enum": ["dataset", "check", "column"] },
+          "type": { "type": "string", "enum": ["text", "number", "checkbox", "datetime", "singleSelect", "multiSelect"] },
+          "description": { "type": "string" },
+          "allowedValues": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "NotificationRuleRequest": {
+        "type": "object",
+        "required": ["name", "recipients", "ruleType"],
+        "properties": {
+          "name": { "type": "string" },
+          "ruleType": { "type": "string", "enum": ["check", "monitor"] },
+          "status": { "type": "string", "enum": ["active", "paused"] },
+          "filter": { "type": "object" },
+          "recipients": { "type": "array", "items": { "type": "object" } },
+          "customization": { "type": "object" }
+        }
+      },
+      "RunnerDTO": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "label": { "type": "string" },
+          "type": { "type": "string", "enum": ["SELF_HOSTED", "SODA_HOSTED"] },
+          "isOnline": { "type": "boolean" },
+          "lastSeenTimestamp": { "type": "string", "format": "date-time" },
+          "versions": {
+            "type": "object",
+            "properties": {
+              "agent": { "type": "string" },
+              "library": { "type": "string" },
+              "runner": { "type": "string" }
+            }
+          }
+        }
+      },
+      "CreateSecretRequest": {
+        "type": "object",
+        "required": ["name", "encryptedValue", "encryptionKey"],
+        "properties": {
+          "name": { "type": "string", "pattern": "^\\S+$", "description": "Secret name, no whitespace" },
+          "encryptedValue": { "type": "string" },
+          "encryptionKey": { "type": "string" }
+        }
+      },
+      "UpdateSecretRequest": {
+        "type": "object",
+        "required": ["encryptedValue", "encryptionKey"],
+        "properties": {
+          "encryptedValue": { "type": "string" },
+          "encryptionKey": { "type": "string" }
+        }
+      }
+    }
+  },
+  "tags": [
+    { "name": "Utility", "description": "API connectivity and authentication testing" },
+    { "name": "Checks", "description": "Data quality check results and management" },
+    { "name": "Scans", "description": "Data quality scan execution and monitoring" },
+    { "name": "Incidents", "description": "Data quality incident tracking and management" },
+    { "name": "Datasets", "description": "Dataset management, monitoring, and configuration" },
+    { "name": "Discovered Datasets", "description": "Datasets discovered but not yet onboarded" },
+    { "name": "Datasources", "description": "Data source connection and configuration management" },
+    { "name": "Contracts", "description": "Data contract definition, publishing, and verification" },
+    { "name": "Attributes", "description": "Custom attribute management for datasets, checks, and columns" },
+    { "name": "Notification Rules", "description": "Alert and notification rule management" },
+    { "name": "Runners", "description": "Scan runner agent management" },
+    { "name": "Secrets", "description": "Encrypted secret storage for datasource credentials" },
+    { "name": "Users", "description": "User and user group management" }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "provider": "soda-co",
+  "sources": [
+    "soda-co-attributes-api-openapi.yml",
+    "soda-co-checks-api-openapi.yml",
+    "soda-co-contracts-api-openapi.yml",
+    "soda-co-datasets-api-openapi.yml",
+    "soda-co-datasources-api-openapi.yml",
+    "soda-co-discovered-datasets-api-openapi.yml",
+    "soda-co-incidents-api-openapi.yml",
+    "soda-co-notification-rules-api-openapi.yml",
+    "soda-co-runners-api-openapi.yml",
+    "soda-co-scans-api-openapi.yml",
+    "soda-co-secrets-api-openapi.yml",
+    "soda-co-users-api-openapi.yml",
+    "soda-co-utility-api-openapi.yml"
+  ],
+  "outputs": [
+    "soda-co-attributes-api-openapi.yml",
+    "soda-co-checks-api-openapi.yml",
+    "soda-co-contracts-api-openapi.yml",
+    "soda-co-datasets-api-openapi.yml",
+    "soda-co-datasources-api-openapi.yml",
+    "soda-co-discovered-datasets-api-openapi.yml",
+    "soda-co-incidents-api-openapi.yml",
+    "soda-co-notification-rules-api-openapi.yml",
+    "soda-co-runners-api-openapi.yml",
+    "soda-co-scans-api-openapi.yml",
+    "soda-co-secrets-api-openapi.yml",
+    "soda-co-users-api-openapi.yml",
+    "soda-co-utility-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
