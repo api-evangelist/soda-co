@@ -1,0 +1,380 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Soda Cloud REST Attributes Datasources API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Datasources",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List datasources",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/datasources",
+            "params": [
+              {
+                "name": "size",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List datasources"
+        },
+        {
+          "info": {
+            "name": "Create datasource",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/datasources",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new V4 datasource from a YAML configuration."
+        },
+        {
+          "info": {
+            "name": "Test datasource connection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/datasources/actions/testConnection",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Initiates an async connection test. Returns 202 with operation ID to poll."
+        },
+        {
+          "info": {
+            "name": "Poll connection test status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/datasources/actions/testConnection/:operationId",
+            "params": [
+              {
+                "name": "operationId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Poll connection test status"
+        },
+        {
+          "info": {
+            "name": "List datasource roles",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/datasources/roles",
+            "params": [
+              {
+                "name": "size",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List datasource roles"
+        },
+        {
+          "info": {
+            "name": "Create datasource role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/datasources/roles",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create datasource role"
+        },
+        {
+          "info": {
+            "name": "Update datasource role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/datasources/roles/:roleId",
+            "params": [
+              {
+                "name": "roleId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update datasource role"
+        },
+        {
+          "info": {
+            "name": "Delete datasource role",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://cloud.soda.io/api/v1/datasources/roles/:roleId",
+            "params": [
+              {
+                "name": "roleId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete datasource role"
+        },
+        {
+          "info": {
+            "name": "Get datasource",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/datasources/:datasourceId",
+            "params": [
+              {
+                "name": "datasourceId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get datasource"
+        },
+        {
+          "info": {
+            "name": "Update datasource",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/datasources/:datasourceId",
+            "params": [
+              {
+                "name": "datasourceId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update datasource"
+        },
+        {
+          "info": {
+            "name": "Delete datasource",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://cloud.soda.io/api/v1/datasources/:datasourceId",
+            "params": [
+              {
+                "name": "datasourceId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Remove datasource and all associated resources (async operation)."
+        },
+        {
+          "info": {
+            "name": "Get datasource diagnostics warehouse config",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/datasources/:datasourceId/diagnosticsWarehouse",
+            "params": [
+              {
+                "name": "datasourceId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get datasource diagnostics warehouse config"
+        },
+        {
+          "info": {
+            "name": "Update datasource diagnostics warehouse",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/datasources/:datasourceId/diagnosticsWarehouse",
+            "params": [
+              {
+                "name": "datasourceId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update datasource diagnostics warehouse"
+        },
+        {
+          "info": {
+            "name": "Trigger on-demand discovery scan",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/datasources/:datasourceId/discover",
+            "params": [
+              {
+                "name": "datasourceId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Trigger on-demand discovery scan"
+        },
+        {
+          "info": {
+            "name": "Onboard datasets",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/datasources/:datasourceId/onboardDatasets",
+            "params": [
+              {
+                "name": "datasourceId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Async operation to onboard discovered datasets from a datasource."
+        },
+        {
+          "info": {
+            "name": "Poll onboarding operation status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/datasources/:datasourceId/onboardDatasets/:operationId",
+            "params": [
+              {
+                "name": "datasourceId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "operationId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Poll onboarding operation status"
+        },
+        {
+          "info": {
+            "name": "List datasource responsibilities",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/datasources/:datasourceId/responsibilities",
+            "params": [
+              {
+                "name": "datasourceId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "List datasource responsibilities"
+        },
+        {
+          "info": {
+            "name": "Update datasource responsibilities",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/datasources/:datasourceId/responsibilities",
+            "params": [
+              {
+                "name": "datasourceId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update datasource responsibilities"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

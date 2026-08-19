@@ -1,0 +1,234 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Soda Cloud REST Attributes Contracts API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Contracts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List contracts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/contracts",
+            "params": [
+              {
+                "name": "size",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "datasetId",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "datasetQualifiedName",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List contracts"
+        },
+        {
+          "info": {
+            "name": "Create a contract",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/contracts",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a contract"
+        },
+        {
+          "info": {
+            "name": "Generate skeleton contract",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/contracts/actions/createSkeleton",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Generates a skeleton contract for a dataset (async)."
+        },
+        {
+          "info": {
+            "name": "Get skeleton contract generation status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/contracts/actions/createSkeleton/:operationId",
+            "params": [
+              {
+                "name": "operationId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get skeleton contract generation status"
+        },
+        {
+          "info": {
+            "name": "Generate contracts (AI-powered)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/contracts/actions/generate",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "AI-powered async contract generation for multiple datasets."
+        },
+        {
+          "info": {
+            "name": "Get contract generation status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/contracts/actions/generate/:operationId",
+            "params": [
+              {
+                "name": "operationId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get contract generation status"
+        },
+        {
+          "info": {
+            "name": "Get a contract",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/contracts/:contractId",
+            "params": [
+              {
+                "name": "contractId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a contract"
+        },
+        {
+          "info": {
+            "name": "Publish a contract",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/contracts/:contractId",
+            "params": [
+              {
+                "name": "contractId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Publish a contract"
+        },
+        {
+          "info": {
+            "name": "Verify a contract",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/contracts/:contractId/verify",
+            "params": [
+              {
+                "name": "contractId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Verify a contract"
+        },
+        {
+          "info": {
+            "name": "List contract versions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/contracts/:contractId/versions",
+            "params": [
+              {
+                "name": "contractId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "size",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "createdBefore",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List contract versions"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

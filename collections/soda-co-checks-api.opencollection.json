@@ -1,0 +1,81 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Soda Cloud REST Attributes Checks API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Checks",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List checks",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/checks",
+            "params": [
+              {
+                "name": "size",
+                "value": "",
+                "type": "query",
+                "description": "Number of results per page"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number (0-indexed)"
+              },
+              {
+                "name": "datasetId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by specific dataset ID"
+              },
+              {
+                "name": "checkIds",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated list of check IDs (max 1000, cannot combine with other filters)"
+              }
+            ]
+          },
+          "docs": "Retrieve paginated check results. Users see only checks for datasets with View dataset permissions; Admins see all."
+        },
+        {
+          "info": {
+            "name": "Delete a check",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://cloud.soda.io/api/v1/checks/:checkId",
+            "params": [
+              {
+                "name": "checkId",
+                "value": "",
+                "type": "path",
+                "description": "Identifier of the check to delete"
+              }
+            ]
+          },
+          "docs": "Deletes a check by ID. Requires Manage checks permission; Admins can delete all checks."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

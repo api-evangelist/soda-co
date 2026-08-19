@@ -1,0 +1,92 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Soda Cloud REST Attributes Scans API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Scans",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get scan status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/scans/:scanId",
+            "params": [
+              {
+                "name": "scanId",
+                "value": "",
+                "type": "path",
+                "description": "Scan identifier from the trigger response"
+              }
+            ]
+          },
+          "docs": "Retrieve the status and results of a scan by scan ID."
+        },
+        {
+          "info": {
+            "name": "Cancel a scan",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://cloud.soda.io/api/v1/scans/:scanId",
+            "params": [
+              {
+                "name": "scanId",
+                "value": "",
+                "type": "path",
+                "description": "Scan identifier"
+              }
+            ]
+          },
+          "docs": "Cancels a queued or running scan. Changes state to canceled (if pending) or cancelationRequested (if submitted)."
+        },
+        {
+          "info": {
+            "name": "Get scan logs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/scans/:scanId/logs",
+            "params": [
+              {
+                "name": "scanId",
+                "value": "",
+                "type": "path",
+                "description": "Scan identifier"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "size",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Retrieve paginated log entries for a specific scan."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

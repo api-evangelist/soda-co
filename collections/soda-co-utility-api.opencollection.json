@@ -1,0 +1,36 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Soda Cloud REST Attributes Utility API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Utility",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Test login / verify credentials",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/test-login"
+          },
+          "docs": "Verifies API connectivity and validates that authentication and authorization details are accurate and the API is ready to accept calls."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

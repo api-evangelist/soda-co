@@ -1,0 +1,420 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Soda Cloud REST Attributes Datasets API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Datasets",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List datasets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/datasets",
+            "params": [
+              {
+                "name": "size",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "from",
+                "value": "",
+                "type": "query",
+                "description": "ISO 8601 timestamp filter"
+              },
+              {
+                "name": "datasourceName",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Retrieve a paginated list of datasets with optional filtering."
+        },
+        {
+          "info": {
+            "name": "Get dataset by qualified name",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/datasets/byDatasetQualifiedName/:datasetQualifiedName",
+            "params": [
+              {
+                "name": "datasetQualifiedName",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Retrieve a single dataset by its qualified name."
+        },
+        {
+          "info": {
+            "name": "Get dataset by ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/datasets/:datasetId",
+            "params": [
+              {
+                "name": "datasetId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Retrieve a single dataset by its ID."
+        },
+        {
+          "info": {
+            "name": "Update dataset",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/datasets/:datasetId",
+            "params": [
+              {
+                "name": "datasetId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update dataset metadata including label, tags, attributes, owners, and configuration settings."
+        },
+        {
+          "info": {
+            "name": "Delete dataset",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://cloud.soda.io/api/v1/datasets/:datasetId",
+            "params": [
+              {
+                "name": "datasetId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a dataset. Deletion is not immediate and can take some time to complete."
+        },
+        {
+          "info": {
+            "name": "List dataset roles",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/datasets/roles",
+            "params": [
+              {
+                "name": "size",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List dataset roles"
+        },
+        {
+          "info": {
+            "name": "Create dataset role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/datasets/roles",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create dataset role"
+        },
+        {
+          "info": {
+            "name": "Update dataset role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/datasets/roles/:roleId",
+            "params": [
+              {
+                "name": "roleId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update dataset role"
+        },
+        {
+          "info": {
+            "name": "Delete dataset role",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://cloud.soda.io/api/v1/datasets/roles/:roleId",
+            "params": [
+              {
+                "name": "roleId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete dataset role"
+        },
+        {
+          "info": {
+            "name": "Set column attributes in bulk",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/datasets/:datasetId/columnAttributes",
+            "params": [
+              {
+                "name": "datasetId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Set column attributes in bulk"
+        },
+        {
+          "info": {
+            "name": "Create column metric monitor",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/datasets/:datasetId/columnMetricMonitors",
+            "params": [
+              {
+                "name": "datasetId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create column metric monitor"
+        },
+        {
+          "info": {
+            "name": "Update column metric monitor",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/datasets/:datasetId/columnMetricMonitors/:monitorId",
+            "params": [
+              {
+                "name": "datasetId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "monitorId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update column metric monitor"
+        },
+        {
+          "info": {
+            "name": "Delete column metric monitor",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://cloud.soda.io/api/v1/datasets/:datasetId/columnMetricMonitors/:monitorId",
+            "params": [
+              {
+                "name": "datasetId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "monitorId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete column metric monitor"
+        },
+        {
+          "info": {
+            "name": "Create custom SQL monitor",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/datasets/:datasetId/customSqlMonitors",
+            "params": [
+              {
+                "name": "datasetId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create custom SQL monitor"
+        },
+        {
+          "info": {
+            "name": "Update custom SQL monitor",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/datasets/:datasetId/customSqlMonitors/:monitorId",
+            "params": [
+              {
+                "name": "datasetId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "monitorId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update custom SQL monitor"
+        },
+        {
+          "info": {
+            "name": "Delete custom SQL monitor",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://cloud.soda.io/api/v1/datasets/:datasetId/customSqlMonitors/:monitorId",
+            "params": [
+              {
+                "name": "datasetId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "monitorId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete custom SQL monitor"
+        },
+        {
+          "info": {
+            "name": "Get dataset compute warehouse configuration",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/datasets/:datasetId/computeWarehouse",
+            "params": [
+              {
+                "name": "datasetId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get dataset compute warehouse configuration"
+        },
+        {
+          "info": {
+            "name": "Get dataset diagnostics warehouse information",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/datasets/:datasetId/diagnosticsWarehouse",
+            "params": [
+              {
+                "name": "datasetId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get dataset diagnostics warehouse information"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,103 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Soda Cloud REST Attributes Notification Rules API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Notification Rules",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List notification rules",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/notificationRules",
+            "params": [
+              {
+                "name": "size",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List notification rules"
+        },
+        {
+          "info": {
+            "name": "Create notification rule",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/notificationRules",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Requires MANAGE_NOTIFICATION_RULES permission."
+        },
+        {
+          "info": {
+            "name": "Update notification rule",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/notificationRules/:notificationRuleId",
+            "params": [
+              {
+                "name": "notificationRuleId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Requires MANAGE_NOTIFICATION_RULES permission. Performs full replacement."
+        },
+        {
+          "info": {
+            "name": "Delete notification rule",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://cloud.soda.io/api/v1/notificationRules/:notificationRuleId",
+            "params": [
+              {
+                "name": "notificationRuleId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Requires MANAGE_NOTIFICATION_RULES permission."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

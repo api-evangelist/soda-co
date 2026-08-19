@@ -1,0 +1,48 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Soda Cloud REST Attributes Incidents API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Incidents",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Update an incident",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/incidents/:incidentId",
+            "params": [
+              {
+                "name": "incidentId",
+                "value": "",
+                "type": "path",
+                "description": "Identifier of the incident to update"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update the title, description, severity, status, or resolution notes of an incident."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

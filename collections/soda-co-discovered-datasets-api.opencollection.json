@@ -1,0 +1,60 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Soda Cloud REST Attributes Discovered Datasets API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Discovered Datasets",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List discovered datasets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/discoveredDatasets",
+            "params": [
+              {
+                "name": "size",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "datasourceId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by data source"
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search by dataset name"
+              }
+            ]
+          },
+          "docs": "Retrieve a paginated list of discovered datasets available for onboarding."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

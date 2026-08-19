@@ -1,0 +1,95 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Soda Cloud REST Attributes Runners API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Runners",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List runners",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/runners",
+            "params": [
+              {
+                "name": "size",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List runners"
+        },
+        {
+          "info": {
+            "name": "Create a runner",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/runners"
+          },
+          "docs": "Requires MANAGE_DATASOURCES_AND_AGENTS permission. Returns apiKeyId and apiKeySecret (only available at creation time)."
+        },
+        {
+          "info": {
+            "name": "Get a runner",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/runners/:runnerId",
+            "params": [
+              {
+                "name": "runnerId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a runner"
+        },
+        {
+          "info": {
+            "name": "Delete a runner",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://cloud.soda.io/api/v1/runners/:runnerId",
+            "params": [
+              {
+                "name": "runnerId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Only self-hosted runners can be deleted. Cannot delete in-use runners. Requires MANAGE_DATASOURCES_AND_AGENTS permission."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

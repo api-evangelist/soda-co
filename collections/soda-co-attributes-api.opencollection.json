@@ -1,0 +1,108 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Soda Cloud REST Attributes API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "basic",
+      "username": "{{username}}",
+      "password": "{{password}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Attributes",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List attributes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://cloud.soda.io/api/v1/attributes",
+            "params": [
+              {
+                "name": "size",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "resourceType",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List attributes"
+        },
+        {
+          "info": {
+            "name": "Create attribute",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/attributes",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Requires MANAGE_ATTRIBUTES permission."
+        },
+        {
+          "info": {
+            "name": "Update attribute",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://cloud.soda.io/api/v1/attributes/:attributeId",
+            "params": [
+              {
+                "name": "attributeId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Requires MANAGE_ATTRIBUTES permission."
+        },
+        {
+          "info": {
+            "name": "Delete attribute",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://cloud.soda.io/api/v1/attributes/:attributeId",
+            "params": [
+              {
+                "name": "attributeId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Requires MANAGE_ATTRIBUTES permission."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
